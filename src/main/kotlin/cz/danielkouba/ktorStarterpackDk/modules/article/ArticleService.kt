@@ -96,13 +96,13 @@ final class ArticleService(
      */
     suspend fun cleanUp(logger: Logger) {
         val cleanupLogger = logger.child(this.javaClass.simpleName)
-//        try {
+        try {
             cleanupLogger.info("cleanUp started")
             articleRepository.cleanUp()
             cleanupLogger.info("cleanUp finished")
-//        } catch (e: Exception) {
-//            cleanupLogger.error("Error while cleaning up", e)
-//        }
+        } catch (e: Exception) {
+            cleanupLogger.error("Error while cleaning up", e)
+        }
     }
 
 }

@@ -41,6 +41,9 @@ fun Application.configureApplicationModules() {
 
     // graceful shutdown modules
     environment.monitor.subscribe(ApplicationStopped) {
+        TODO("implement graceful shutdown")
+
+        // this is just a test
         runBlocking {
             for(module in modules) {
                 println("onGracefulShutdown ${module.name} 1 ")
