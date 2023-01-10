@@ -1,0 +1,218 @@
+openapi: "3.0.3"
+info:
+  title: "DK KTOR StarterPack"
+  description: "Kotlin KTOR StarterPack for API with some example endpoints"
+  version: "1.0.0"
+servers:
+  - url: "http://0.0.0.0:8080"
+  - url: "http://localhost"
+  - url: "http://localhost:3000"
+paths:
+  /:
+    get:
+      summary: "Get API info"
+      responses:
+        200:
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: object
+  /metrics:
+    get:
+      summary: "Get Metrics"
+      responses:
+        200:
+          description: "OK"
+          content:
+            text/plain:
+  /health:
+    get:
+      summary: "Get Health"
+      responses:
+        200:
+          description: "OK"
+          content:
+            text/plain:
+            application/json:
+              schema:
+                type: object
+  /v1/articles:
+    get:
+      summary: "Get all article"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+            schema:
+              $ref: "#/components/schemas/ArticleCollection"
+    post:
+      description: "Creates a new article"
+      requestBody:
+        description: "A JSON object containing article information"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Article"
+      responses:
+        "201":
+          description: "Created"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Article"
+        "420":
+          description: "Validation Error"
+        "409":
+          description: "Duplicate"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /articles/{id}:
+    get:
+      description: "Returns a article by its ID"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            'application/json':
+              schema:
+                $ref: "#/components/schemas/Article"
+        "404":
+          description: "Not Found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    put:
+      description: "Updates a article by its ID"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      requestBody:
+        description: "A JSON object containing article information"
+        required: true
+        content:
+        application/json:
+          schema:
+          $ref: "#/components/schemas/Article"
+      responses:
+        "200":
+        description: "OK"
+        content:
+          application/json:
+          schema:
+            $ref: "#/components/schemas/Article"
+        "404":
+          description: "Not Found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+        "420":
+          description: "Validation Error"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    delete:
+      description: "Deletes a article by its ID"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+  /swagger:
+    get:
+      summary: "Get Swagger UI"
+      responses:
+        200:
+          description: "OK"
+          content:
+            "text/html"
+  /swagger.yml:
+    get:
+      summary: "Get Swagger specification file"
+      responses:
+        200:
+          description: "OK"
+          content:
+            application/yaml:
+              schema:
+                type: object
+components:
+  schemas:
+    Error:
+      type: object
+      required:
+        - errorMessage, status
+      properties:
+        errorMessage:
+          type: string
+          example: "404 Not Found"
+        status:
+          type: integer
+          example: 404
+    Article:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+        title:
+          type: "string"
+        text:
+          type: "string"
+        createdAt:
+          type: "string"
+          format: "date-time"
+          example: "2019-01-01T00:00:00.000Z"
+        rating:
+          type: "float"
+          minimum: 0
+          maximum: 5
+          example: 1
+        rateCount:
+          type: "integer"
+          minimum: 0
+          example: 1
+        status:
+          type: "string"
+          enum:
+            - "DRAFT"
+            - "PUBLISHED"
+            - "DELETED"
+          example: "PUBLISHED"
+    ArticleCollection:
+      type: "object"
+      required: [ items, hits ]
+      properties:
+        items:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/Article"
+        hits:
+          type: "integer"
