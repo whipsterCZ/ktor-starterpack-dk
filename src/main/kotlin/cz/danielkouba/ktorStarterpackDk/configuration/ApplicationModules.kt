@@ -45,7 +45,7 @@ fun Application.configureApplicationModules() {
 
         // this is just a test
         runBlocking {
-            for(module in modules) {
+            for (module in modules) {
                 println("onGracefulShutdown ${module.name} 1 ")
                 module.onShutdown()
                 println("onGracefulShutdown ${module.name} 2")
