@@ -13,13 +13,16 @@ import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 import java.util.UUID
 
+val CALL_START_TIME = AttributeKey<LocalDateTime>("CallStartTime")
+
 fun Application.configureLogging() {
+
+    val config = this.config()
 
     /**
      * @see [LoggerService.configureLoggerContext]
      */
     val loggerService: LoggerService by inject()
-
 
     install(CallId) {
         header(HttpHeaders.XRequestId)
@@ -31,8 +34,6 @@ fun Application.configureLogging() {
         }
     }
 
-    val CALL_START_TIME = AttributeKey<LocalDateTime>("CallStartTime")
-
     intercept(ApplicationCallPipeline.Setup) {
         call.attributes.put(CALL_START_TIME, LocalDateTime.now())
     }
@@ -40,11 +41,13 @@ fun Application.configureLogging() {
     install(CallLogging) {
         logger = loggerService.createLogger("router")
         filter { call ->
-            // skip `/metrics` and `/health` etc..
-            call.request.path().startsWith("/v1")
+            val skipUrls = listOf("/metrics", "/health")
+            skipUrls.none {
+                call.request.path().startsWith(it)
+            }
         }
         callIdMdc("requestId")
-        disableDefaultColors()
+        if (config.logAppender == LoggerService.Appender.JSON) disableDefaultColors()
         format { call ->
             val status = call.response.status()
             val httpMethod = call.request.httpMethod.value

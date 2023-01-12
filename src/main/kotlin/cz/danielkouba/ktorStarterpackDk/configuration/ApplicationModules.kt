@@ -6,16 +6,16 @@ import cz.danielkouba.ktorStarterpackDk.modules.logger.LoggerService
 import io.ktor.events.EventHandler
 import io.ktor.server.application.*
 import io.ktor.server.resources.*
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.koin.core.module.Module
 import org.koin.ktor.plugin.koin
+import kotlin.system.measureTimeMillis
 
-// Attach particular app modules (routing, handlers, DI, services, etc.)
+/**
+ * Attach particular app modules (routing, handlers, DI, services, etc.)
+ */
 fun Application.configureApplicationModules() {
 
     // needed fot typed-safe routing with parameters
@@ -23,7 +23,7 @@ fun Application.configureApplicationModules() {
 
     // order of modules is important (DI is initialized in order of modules)
     val modules: List<ApplicationModule> = listOf(
-//        AppModule(),
+        AppModule(),
         ArticleModule(),
     )
 
@@ -39,26 +39,32 @@ fun Application.configureApplicationModules() {
         it.routing()
     }
 
-    // graceful shutdown modules
-    environment.monitor.subscribe(ApplicationStopped) {
-        TODO("implement graceful shutdown")
 
-        // this is just a test
-        runBlocking {
-            for (module in modules) {
-                println("onGracefulShutdown ${module.name} 1 ")
-                module.onShutdown()
-                println("onGracefulShutdown ${module.name} 2")
-                module.onShutdown()
-                println("onGracefulShutdown ${module.name} 3")
-                module.onShutdown()
-                println("onGracefulShutdown ${module.name} end")
-                module.onShutdown()
+    // graceful shutdown modules
+    onShutdown {
+        log.info("ApplicationModules.onShutdown started")
+
+        val time = measureTimeMillis {
+            val hooks = modules.map {
+                async {
+                    try {
+                        it.onShutdown()
+                    } catch (e: Exception) {
+                        log.error(
+                            "ApplicationModules.onShutdown Error during shutdown of module ${it.name} ${e.message}",
+                            e
+                        )
+                    }
+                }
             }
-            modules.forEach {
+
+            runBlocking(Dispatchers.Default) {
+                launch {
+                    hooks.awaitAll()
+                }
             }
         }
-        println("configreGracefulShutdown end")
+        log.info("ApplicationModules.onShutdown ended in ${time}ms")
     }
 
 }
@@ -83,16 +89,13 @@ abstract class ApplicationModule : KoinComponent {
     abstract fun dependencyInjectionModules(): List<Module>
 
     /**
-     * on graceful shutdown release resources, close connections, close websockets etc.
+     * On graceful shutdown release resources, close connections, close websockets etc.
+     * All exceptions are handled in onShutdown hook itself
      */
-    open suspend fun onShutdown(): Unit {}
+    abstract suspend fun onShutdown()
 
     /**
-     * Another way how to register graceful shutdown
-     * TODO:  decide which way is better
+     * Cant be static because it looks like abstract class doesn't have public static properties
      */
-    fun onGracefulShutdown(handler: EventHandler<Application>) {
-        application.environment.monitor.subscribe(ApplicationStopped, handler)
-    }
 
 }

@@ -1,11 +1,10 @@
 package cz.danielkouba.ktorStarterpackDk.modules.article
 
+import cz.danielkouba.ktorStarterpackDk.configuration.ReqContext
 import cz.danielkouba.ktorStarterpackDk.modules.article.model.*
 import cz.danielkouba.ktorStarterpackDk.modules.article.repo.ArticleRepository
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import ch.qos.logback.classic.Logger
-import cz.danielkouba.ktorStarterpackDk.modules.logger.child
 
 final class ArticleService(
     private val articleRepository: ArticleRepository
@@ -14,18 +13,14 @@ final class ArticleService(
     suspend fun findAllArticles(context: ReqContext): ArticleCollection {
         val ctx = createContext(context, "findAllArticles")
         try {
-            val articles = articleRepository.findAllArticles()
-            return ArticleCollection(
-                items = articles,
-                hits = articles.size
-            )
+            return articleRepository.findAllArticles()
         } catch (e: Exception) {
             ctx.logger.error("Error while finding all article: ${e.message}", e)
             throw e
         }
     }
 
-    suspend fun findArticlesByStatus(status: ArticleStatus, context: ReqContext): List<ArticleModel> {
+    suspend fun findArticlesByStatus(status: ArticleStatus, context: ReqContext): ArticleCollection {
         val ctx = createContext(context, "findArticlesByStatus")
         try {
             return articleRepository.findArticlesByStatus(status)
@@ -86,23 +81,17 @@ final class ArticleService(
      *  - create custom meta scope
      */
     fun createContext(context: ReqContext, method: String? = null): ReqContext {
-        val ctx = context.createChild(this.javaClass.simpleName)
+        val ctx = context.createChild(this::class.simpleName.toString())
         method?.let { context.method(it) }
         return ctx
     }
 
     /**
-     * on graceful shutdown release resources, close connections, close websockets etc.
+     * On shutdown release resources, close connections, close websockets etc.
+     * All exceptions are handled in onShutdown hook itself
      */
-    suspend fun cleanUp(logger: Logger) {
-        val cleanupLogger = logger.child(this.javaClass.simpleName)
-        try {
-            cleanupLogger.info("cleanUp started")
-            articleRepository.cleanUp()
-            cleanupLogger.info("cleanUp finished")
-        } catch (e: Exception) {
-            cleanupLogger.error("Error while cleaning up", e)
-        }
+    suspend fun cleanUp() {
+        articleRepository.cleanUp()
     }
 
 }

@@ -7,17 +7,16 @@ import cz.danielkouba.ktorStarterpackDk.modules.logger.LoggerService
 import io.ktor.http.*
 import io.ktor.resources.*
 import io.ktor.server.application.*
-import io.ktor.server.routing.routing
-import io.ktor.server.routing.route
 import io.ktor.server.resources.*
+import io.ktor.server.resources.post
+import io.ktor.server.resources.put
 import io.ktor.server.response.*
-import kotlinx.coroutines.runBlocking
+import io.ktor.server.routing.*
 import kotlinx.serialization.Serializable
-import org.koin.core.component.inject
+import org.koin.core.component.*
 import org.koin.core.module.Module
+import org.koin.core.parameter.parametersOf
 
-// this alias needed for loosen coupling of current application and module logic
-typealias ReqContext = cz.danielkouba.ktorStarterpackDk.configuration.ReqContext
 
 @Serializable
 @Resource("articles") //!!be careful to not import `io.ktor.server.routing.*` it will disable (override) typed-routing extension
@@ -31,33 +30,29 @@ data class Articles(val status: ArticleStatus? = null) {
 class ArticleModule : ApplicationModule() {
 
     val service: ArticleService by inject()
+    private val exporterV1: ArticleExportService by inject { parametersOf("v1") }
 
     init {
-        application.log.info("Article module init")
-//        onGracefulShutdown {
-//            runBlocking {
-//                onShutdown()
-//            }
-//        }
+        logger.debug("${this::class.simpleName} init")
     }
 
     override fun routing() {
         application.routing {
             route("v1") {
                 get<Articles> {
-                    GetArticlesHandler(service, it).handle(call)
+                    GetArticlesHandler(service, exporterV1, it).respondTo(call)
                 }
                 post<Articles> {
-                    CreateArticleHandler(service, it).handle(call)
+                    CreateArticleHandler(service, exporterV1, it).respondTo(call)
                 }
                 get<Articles.Article> {
-                    GetArticleHandler(service, it).handle(call)
+                    GetArticleHandler(service, exporterV1, it).respondTo(call)
                 }
                 put<Articles.Article> {
-                    UpdateArticleHandler(service, it).handle(call)
+                    UpdateArticleHandler(service, exporterV1, it).respondTo(call)
                 }
                 delete<Articles.Article> {
-                    DeleteArticleHandler(service, it).handle(call)
+                    DeleteArticleHandler(service, it).respondTo(call)
                 }
             }
         }
@@ -68,12 +63,9 @@ class ArticleModule : ApplicationModule() {
         return listOf(articleDIModule)
     }
 
-    override suspend fun onShutdown() {
-//         release resources, close connections, close websockets etc.
-        println("ArticleModule onShutdown")
-        service.cleanUp(logger)
-        println("ArticleModule onShutdown end")
-    }
-
+    /**
+     * On shutdown release resources, close connections, close websockets etc.
+     * All exceptions are handled in onShutdown hook itself
+     */
+    override suspend fun onShutdown() = service.cleanUp()
 }
-

@@ -1,25 +1,26 @@
 package cz.danielkouba.ktorStarterpackDk.modules.article.handlers
 
-import ch.qos.logback.classic.Level
+import cz.danielkouba.ktorStarterpackDk.modules.article.ArticleExportService
 import cz.danielkouba.ktorStarterpackDk.modules.article.ArticleService
 import cz.danielkouba.ktorStarterpackDk.modules.article.Articles
+import cz.danielkouba.ktorStarterpackDk.modules.article.model.ArticleCollection
 import io.ktor.server.application.*
-import io.ktor.server.response.*
 
 class GetArticlesHandler(
     service: ArticleService,
+    exporter: ArticleExportService,
     private val articles: Articles
-) : BaseArticleHandler(service) {
+) : BaseArticleHandler<ArticleCollection>(service, exporter) {
 
-    override suspend fun handle(call: ApplicationCall) {
+    override suspend fun handle(call: ApplicationCall): ArticleResult<ArticleCollection> {
         val context = reqContext(call)
 
-        val articleCollection = if (articles.status != null) {
-            service.findArticlesByStatus(articles.status, context)
-        } else {
-            service.findAllArticles(context).items
-        }
-
-        call.respond(articleCollection)
+        return ArticleResult(
+            if (articles.status != null) {
+                service.findArticlesByStatus(articles.status, context)
+            } else {
+                service.findAllArticles(context)
+            },
+        )
     }
 }

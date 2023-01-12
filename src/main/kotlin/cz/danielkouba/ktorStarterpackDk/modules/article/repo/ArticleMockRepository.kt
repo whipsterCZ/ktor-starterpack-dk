@@ -3,6 +3,7 @@ package cz.danielkouba.ktorStarterpackDk.modules.article.repo
 import cz.danielkouba.ktorStarterpackDk.modules.article.model.ArticleModel
 import cz.danielkouba.ktorStarterpackDk.modules.article.model.ArticleStatus
 import cz.danielkouba.ktorStarterpackDk.modules.article.articleNotFound
+import cz.danielkouba.ktorStarterpackDk.modules.article.model.ArticleCollection
 import cz.danielkouba.ktorStarterpackDk.modules.article.model.ArticleCreateModel
 
 open class ArticleMockRepository : ArticleRepository {
@@ -12,12 +13,15 @@ open class ArticleMockRepository : ArticleRepository {
         populate()
     }
 
-    override suspend fun findAllArticles(): List<ArticleModel> {
-        return articles
+    override suspend fun findAllArticles(): ArticleCollection {
+        return ArticleCollection(articles, articles.size)
     }
 
-    override suspend fun findArticlesByStatus(status: ArticleStatus): List<ArticleModel> {
-        return articles.filter { it.status == status }
+    override suspend fun findArticlesByStatus(status: ArticleStatus): ArticleCollection {
+        return ArticleCollection(
+            items = articles.filter { it.status == status },
+            hits = articles.size
+        )
     }
 
     override suspend fun findArticleById(id: String): ArticleModel {

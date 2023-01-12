@@ -1,5 +1,6 @@
 package cz.danielkouba.ktorStarterpackDk.modules.article.model
 
+import cz.danielkouba.ktorStarterpackDk.lib.interfaces.ApplicationModel
 import cz.danielkouba.ktorStarterpackDk.lib.serializers.ZonedDateTimeSerializer
 import kotlinx.serialization.Serializable
 import java.time.ZonedDateTime
@@ -22,7 +23,7 @@ class ArticleModel(
     val rating: Float? = null,
     val rateCount: Int = 0,
     val status: ArticleStatus = ArticleStatus.DRAFT
-) {
+): ApplicationModel<ArticleModel> {
     init {
         require(id.isNotBlank()) { "Article id must not be blank" }
         require(title.isNotBlank()) { "Article title must not be blank" }
@@ -34,8 +35,6 @@ class ArticleModel(
     }
 }
 
-typealias ArticleUpdateModel = ArticleModel
-
 data class ArticleCreateModel(
     val title: String,
     val text: String,
@@ -43,7 +42,7 @@ data class ArticleCreateModel(
     val rating: Float? = null,
     val rateCount: Int = 0,
     val status: ArticleStatus = ArticleStatus.DRAFT
-) {
+): ApplicationModel<ArticleModel> {
     init {
         require(title.isNotBlank()) { "Article title must not be blank" }
         require(text.isNotBlank()) { "Article text must not be blank" }
@@ -56,4 +55,4 @@ data class ArticleCreateModel(
 }
 
 
-
+typealias ArticleUpdateModel = ArticleModel

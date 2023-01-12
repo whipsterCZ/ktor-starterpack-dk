@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory
 class LoggerTest(val service: LoggerService) {
     fun testChild() {
 
-
         fun printLogger(name: String, logger: Logger) {
             println(name)
             println("  ${logger.name} ${logger.hashCode()}")

@@ -9,7 +9,11 @@ import org.koin.dsl.module
 
 val articleDIModule = module {
     single { ArticleMockRepository() }
-    single { ArticleApiRepository(Config.articleApi.url) }
+
+    single {
+        ArticleApiRepository(Config.articleApi.url)
+    }
+
     single<ArticleRepository> {
         when (Config.environment) {
             ConfigEnvironment.UNIT_TEST -> get<ArticleMockRepository>()
@@ -17,4 +21,6 @@ val articleDIModule = module {
         }
     }
     single { ArticleService(get()) }
+
+    single { params -> ArticleExportService(version = params.get()) }
 }

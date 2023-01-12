@@ -56,7 +56,7 @@ class LoggerService(
      */
     fun createLogger(scope: String, configure: ConfigureLogger? = null): Logger {
         val logger = rootLogger.child(scope) {
-//            level = logLevel
+            level = logLevel
         }
         configure?.invoke(logger)
         return logger
@@ -93,11 +93,10 @@ class LoggerService(
  */
 fun Logger.child(scope: String, configure: ConfigureLogger? = null): Logger {
     val loggerName = "${name}.${scope}"
-//    val context: LoggerContext = LoggerFactory.getILoggerFactory() as LoggerContext
-
-
     val logger = loggerContext.getLogger(loggerName) as Logger
+    logger.loggerContext.putProperty("scope", scope)
     configure?.invoke(logger)
+
     return logger
 }
 

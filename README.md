@@ -80,12 +80,14 @@ see `.env.sample` file
 
 - [x] [Ktor](https://ktor.io/) framework
 - [x] Configuration using .env file
+  - [ ] !Check what happens if no .env exists...
 - [x] Dependency Injection [Koin](https://insert-koin.io/)
 - [x] App structure (Modules)
 - [ ] Logging  [configure runtime](https://stackoverflow.com/questions/16910955/programmatically-configure-logback-appender)
-  - [_] LoggerService
-  - [! separated context !]
-  - [ ] Scoped logger per request (meta data userId, shopId, etc) @see ReqContext.kt
+  - [x] LoggerService
+  - [ ] !!!separated LoggerContext
+  - [ ] Check if all logs are compatible with ELK (fe: mal-disc-repo)
+  - [x] Scoped logger per request (meta data userId, shopId, etc) @see ReqContext.kt
   - [x] MethodCalled meta
   - [x] Request logging with correct scope and loggerName
 - [ ] Error Handling
@@ -99,25 +101,32 @@ see `.env.sample` file
   - [!!!] serialization
 - [ ] Testing
   - [ ] Testing EP with snapshots
+  - [ ] Example module test (ArticleModule)
 - [ ] Deployment
   - [ ] Docker
   - [ ] gitlab-ci
   - [ ] k8s
 - [ ] Example module (Articles)
-  - [ ] Routing (Resource Controller)
+  - [x] Routing (Resource Controller)
   - [x] Repository
   - [x] Service
   - [x] Model
+  - [x] ModelExporter (versioned JSON export)
   - [ ] Tests
   - [ ] Request validation
-  - [ ] Response Model Exporters
-  - [_] RequestContext (contextual logger and metadata) @see `plugins/RequestContext.kt`
+  - [ ] POST, PUT handle external models  // TODO("mocked now..")
+  - [x] RequestContext (contextual logger and metadata) @see `plugins/RequestContext.kt`
 - [x] Root ApiInfo endpoint `/` (version, build, swagger, urls, etc)
-- [ ] Graceful shutdown [maybe](https://ktor.io/docs/shutdown-url.html)
+- [x] Graceful shutdown
 - [x] Swagger
   - [x] serve swagger.yml `/swagger/swagger.yml`
   - [x] swagger-ui `/swagger`
--
+
+## Known issues
+- [ ] Auto-reload feature - which broke singletons! [KTOR-4842](https://youtrack.jetbrains.com/issue/KTOR-4842/Autoreloading-It-breaks-lateinit-variables-initialization)
+- [ ] Logger shared context - Not working properly (context should be owned by every child)
+- [ ] CallLogging sets custom logger (app.router) - but it is used by KTOR system logging...  
+- [ ] Serializer for LogLevel doesn't work @see `/lib/serializers/LogLevelSerializer.kt`"
 ```
   ____     __  __        __  __     ______   ______     ______
 /\  __-.  /\ \/ /       /\ \/ /    /\__  _\ /\  __ \   /\  == \

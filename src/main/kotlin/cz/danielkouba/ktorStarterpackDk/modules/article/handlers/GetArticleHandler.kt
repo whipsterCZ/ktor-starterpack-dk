@@ -1,19 +1,27 @@
 package cz.danielkouba.ktorStarterpackDk.modules.article.handlers
 
+import cz.danielkouba.ktorStarterpackDk.modules.article.ArticleExportService
 import cz.danielkouba.ktorStarterpackDk.modules.article.ArticleService
 import cz.danielkouba.ktorStarterpackDk.modules.article.Articles
-import io.ktor.server.application.*
-import io.ktor.server.response.*
+import cz.danielkouba.ktorStarterpackDk.modules.article.model.ArticleModel
+import io.ktor.server.application.ApplicationCall
 
 class GetArticleHandler(
     service: ArticleService,
+    exporter: ArticleExportService,
     private val article: Articles.Article
-) : BaseArticleHandler(service) {
+) : BaseArticleHandler<ArticleModel>(service, exporter) {
 
-    override suspend fun handle(call: ApplicationCall) {
+    /**
+     * Handle the route and return Serializable object or throw exception.
+     * Exceptions will be handled automatically by the app exception handler
+     *
+     * @see [configureErrorHandling]
+     */
+    override suspend fun handle(call: ApplicationCall): ArticleResult<ArticleModel> {
         val context = reqContext(call)
-
-        call.respond(service.findArticleById(article.id, context))
+        return ArticleResult(
+            service.findArticleById(article.id, context)
+        )
     }
-
 }
