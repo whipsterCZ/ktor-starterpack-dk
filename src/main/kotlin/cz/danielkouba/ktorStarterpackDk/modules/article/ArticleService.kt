@@ -30,7 +30,7 @@ final class ArticleService(
         }
     }
 
-    suspend fun createArticle(article: ArticleCreateModel, context: ReqContext): ArticleModel {
+    suspend fun createArticle(article: ArticleCreate, context: ReqContext): Article {
         val ctx = createContext(context, "createArticle")
         try {
             return articleRepository.createArticle(article)
@@ -41,7 +41,7 @@ final class ArticleService(
         }
     }
 
-    suspend fun findArticleById(id: String, context: ReqContext): ArticleModel {
+    suspend fun findArticleById(id: String, context: ReqContext): Article {
         val ctx = createContext(context, "findArticleById")
         ctx.meta.put("articleId", id)
         ctx.logger.info("Finding article by id: $id")
@@ -53,13 +53,20 @@ final class ArticleService(
         }
     }
 
-    suspend fun updateArticle(article: ArticleUpdateModel, context: ReqContext): ArticleModel {
+    suspend fun updateArticle(id: String, update: ArticleUpdate, context: ReqContext): Article {
         val ctx = createContext(context, "updateArticle")
         try {
-            return articleRepository.updateArticle(article)
+
+            val article = articleRepository.findArticleById(id)
+            // this override protected properties
+            val updatedArticle = update.copy(
+                createdAt = article.createdAt, rateCount = article.rateCount, rating = article.rating
+            )
+
+            return articleRepository.updateArticle(id, updatedArticle)
         } catch (e: Exception) {
-            ctx.meta.put("article", Json.encodeToString(article))
-            ctx.logger.error("Error updating article: $article", e)
+            ctx.meta.put("article", Json.encodeToString(update))
+            ctx.logger.error("Error updating article: $update", e)
             throw e
         }
     }
@@ -71,6 +78,32 @@ final class ArticleService(
         } catch (e: Exception) {
             ctx.meta.put("articleId", id)
             ctx.logger.error("Error deleting article by id: $id", e)
+            // no need to rethrow ( Delete should be idempotent operation )
+        }
+    }
+
+    suspend fun rateArticle(id: String, rating: Float, context: ReqContext): Article {
+        val ctx = createContext(context, "rateArticle")
+        try {
+            val article = articleRepository.findArticleById(id)
+
+            val newRateCount = article.rateCount + 1
+            // recalculate arithmetic mean
+            val newRating = ((article.rating ?: 0F) * article.rateCount + rating) / newRateCount
+
+            val ratedArticle = ArticleUpdate(
+                title = article.title,
+                text = article.text,
+                status = article.status,
+                createdAt = article.createdAt,
+                rateCount = newRateCount,
+                rating = newRating
+            )
+            return articleRepository.updateArticle(id, ratedArticle)
+        } catch (e: Exception) {
+            ctx.meta.put("articleId", id)
+            ctx.logger.error("Error rating article by id: $id (rating $rating)", e)
+            throw e
         }
     }
 

@@ -2,16 +2,17 @@ package cz.danielkouba.ktorStarterpackDk.modules.article
 
 import cz.danielkouba.ktorStarterpackDk.configuration.Config
 import cz.danielkouba.ktorStarterpackDk.modules.app.config.ConfigEnvironment
+import cz.danielkouba.ktorStarterpackDk.modules.app.config.ConfigModel
 import cz.danielkouba.ktorStarterpackDk.modules.article.repo.ArticleApiRepository
 import cz.danielkouba.ktorStarterpackDk.modules.article.repo.ArticleMockRepository
 import cz.danielkouba.ktorStarterpackDk.modules.article.repo.ArticleRepository
 import org.koin.dsl.module
 
-val articleDIModule = module {
+fun ArticleDIProvider(config: ConfigModel) = module {
     single { ArticleMockRepository() }
 
     single {
-        ArticleApiRepository(Config.articleApi.url)
+        ArticleApiRepository(config.articleApi.url)
     }
 
     single<ArticleRepository> {

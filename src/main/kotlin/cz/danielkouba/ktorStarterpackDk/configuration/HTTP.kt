@@ -10,6 +10,7 @@ import io.ktor.server.application.*
 import io.ktor.server.plugins.compression.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.cors.routing.CORS
+import io.ktor.server.plugins.requestvalidation.*
 import kotlinx.serialization.json.Json
 
 fun Application.configureHTTP() {
@@ -50,8 +51,9 @@ fun Application.configureHTTP() {
                 ignoreUnknownKeys = true
                 prettyPrint = false
                 isLenient = true
-                encodeDefaults = true // TODO remove or not?
             }
         )
     }
+
+    install(RequestValidation) { }
 }

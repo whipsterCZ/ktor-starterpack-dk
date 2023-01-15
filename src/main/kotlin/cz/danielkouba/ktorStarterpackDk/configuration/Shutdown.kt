@@ -23,9 +23,8 @@ fun Application.configureShutdown() {
 
 /**
  * Shortcut for registering shutdown hooks
- *   - every module should handle its cleanup by itself
- *   - I presume that server is not receiving any new requests
- *   - TODO(need to test if app doesnt receive any new requests but handle existing ones)
+ *   - every module should handle it's cleanup by itself
+ *   - server has finished all requests and is ready to shut down
  *
  * Note:  It is not possible  to listen KTOR [ApplicationStopPreparing] event
  *  - because KOIN is already stopped and DI doesn't work at this point
@@ -40,11 +39,12 @@ fun Application.onShutdown(handler: EventHandler<KoinApplication>) =
  * in other case, application will be terminated immediately without [ApplicationStopped] event raised
  */
 fun gracefulShutdown(server: ApplicationEngine) {
-    server.environment.log.info("Graceful shutdown. Server is stopping ...")
+    server.environment.log.info("Graceful shutdown. Server is stopping...")
+    server.environment.log.debug("Graceful shutdown. Waiting for activity to cool down ${Config.shutdownGracefulPeriod}ms")
     server.stop(
-        Config.shutdownGracefulPeriodSec,
-        Config.shutdownTimeoutSec,
-        TimeUnit.SECONDS
+        Config.shutdownGracefulPeriod,
+        Config.shutdownTimeout,
+        TimeUnit.MILLISECONDS
     )
 }
 

@@ -80,7 +80,6 @@ see `.env.sample` file
 
 - [x] [Ktor](https://ktor.io/) framework
 - [x] Configuration using .env file
-  - [ ] !Check what happens if no .env exists...
 - [x] Dependency Injection [Koin](https://insert-koin.io/)
 - [x] App structure (Modules)
 - [ ] Logging  [configure runtime](https://stackoverflow.com/questions/16910955/programmatically-configure-logback-appender)
@@ -127,6 +126,11 @@ see `.env.sample` file
 - [ ] Logger shared context - Not working properly (context should be owned by every child)
 - [ ] CallLogging sets custom logger (app.router) - but it is used by KTOR system logging...  
 - [ ] Serializer for LogLevel doesn't work @see `/lib/serializers/LogLevelSerializer.kt`"
+- [ ] Resource param validation wierdness (KTOR)
+  - if http://0.0.0.0:3000/v1/articles?status=NEEXISTUJE  
+  -  first time i have correct 400 BadRequest:  `cz.danielkouba.ktorStarterpackDk.modules.article.model.ArticleStatus does not contain element with name 'PUBLISHEDs'`
+  -  second time i have wierd  400 BadRequest: `io.ktor.server.plugins.BadRequestException: Can't transform call to resource`
+  
 ```
   ____     __  __        __  __     ______   ______     ______
 /\  __-.  /\ \/ /       /\ \/ /    /\__  _\ /\  __ \   /\  == \

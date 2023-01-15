@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory
  * Provides logger service and factory for creating loggers.
  */
 class LoggerService(
-    val rootLogger: Logger, // TODO("private")
+    private val rootLogger: Logger,
     private val environment: ConfigEnvironment,
     private val logLevel: Level,
     private val logAppender: Appender,

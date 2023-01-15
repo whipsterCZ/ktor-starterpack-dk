@@ -1,13 +1,13 @@
 package cz.danielkouba.ktorStarterpackDk.modules.article.repo
 
-import cz.danielkouba.ktorStarterpackDk.modules.article.model.ArticleModel
-import cz.danielkouba.ktorStarterpackDk.modules.article.model.ArticleStatus
 import cz.danielkouba.ktorStarterpackDk.modules.article.articleNotFound
-import cz.danielkouba.ktorStarterpackDk.modules.article.model.ArticleCollection
-import cz.danielkouba.ktorStarterpackDk.modules.article.model.ArticleCreateModel
+import cz.danielkouba.ktorStarterpackDk.modules.article.model.*
 
+/**
+ * This is mock repository, just works with in-memory data
+ */
 open class ArticleMockRepository : ArticleRepository {
-    private val articles = mutableListOf<ArticleModel>()
+    private val articles = mutableListOf<Article>()
 
     init {
         populate()
@@ -24,32 +24,52 @@ open class ArticleMockRepository : ArticleRepository {
         )
     }
 
-    override suspend fun findArticleById(id: String): ArticleModel {
+    override suspend fun findArticleById(id: String): Article {
         return articles.find { it.id == id } ?: articleNotFound(id)
     }
 
-    override suspend fun createArticle(article: ArticleCreateModel): ArticleModel {
+
+    override suspend fun createArticle(create: ArticleCreate): Article {
         val randomString = (0..10).map { ('a'..'z').random() }.joinToString("")
-        val createdArticle = ArticleModel(
+
+        val article = Article(
             id = randomString,
-            title = article.title,
-            text = article.text,
-            status = ArticleStatus.DRAFT,
+            title = create.title,
+            text = create.text,
+            status = create.status,
+            createdAt = create.createdAt,
+            rateCount = create.rateCount,
+            rating = create.rating
         )
-        articles.add(createdArticle)
-        return createdArticle
+
+        articles.add(article)
+
+        return article
     }
 
-    override suspend fun updateArticle(article: ArticleModel): ArticleModel {
-        val index = articles.indexOfFirst { it.id == article.id }
-        if (index == -1) articleNotFound(article.id)
+    override suspend fun updateArticle(id: String, update: ArticleUpdate): Article {
+        val index = articles.indexOfFirst { it.id == id }
+        if (index == -1) articleNotFound(id)
+
+        val article = Article(
+            id = id,
+            title = update.title,
+            text = update.text,
+            status = update.status,
+            createdAt = update.createdAt,
+            rateCount = update.rateCount,
+            rating = update.rating
+        )
         articles[index] = article
+
         return article
     }
 
     override suspend fun deleteArticle(id: String) {
         if (!articles.removeIf { it.id == id }) articleNotFound(id)
     }
+
+
 
     override suspend fun cleanUp() {
         // do nothing
@@ -63,7 +83,7 @@ open class ArticleMockRepository : ArticleRepository {
         clear()
         repeat(count) {
             articles.add(
-                ArticleModel(
+                Article(
                     id = it.toString(),
                     title = "Article $it",
                     text = "Article $it text",

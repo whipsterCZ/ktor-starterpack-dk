@@ -1,4 +1,4 @@
-<configuration>
+<configuration scan="false" scanPeriod="5 seconds">
     <appender name="json" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
             <fieldNames>
@@ -7,6 +7,10 @@
                 <version>[ignore]</version>
                 <stackTrace>exception</stackTrace>
             </fieldNames>
+            <throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
+                <maxDepthPerThrowable>2</maxDepthPerThrowable>
+                <shortenedClassNameLength>32</shortenedClassNameLength>
+            </throwableConverter>
         </encoder>
     </appender>
 

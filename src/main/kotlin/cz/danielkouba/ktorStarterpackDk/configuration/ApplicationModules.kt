@@ -1,51 +1,47 @@
 package cz.danielkouba.ktorStarterpackDk.configuration
 
+import cz.danielkouba.ktorStarterpackDk.lib.model.ApplicationModule
 import cz.danielkouba.ktorStarterpackDk.modules.app.AppModule
 import cz.danielkouba.ktorStarterpackDk.modules.article.ArticleModule
-import cz.danielkouba.ktorStarterpackDk.modules.logger.LoggerService
-import io.ktor.events.EventHandler
 import io.ktor.server.application.*
 import io.ktor.server.resources.*
 import kotlinx.coroutines.*
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
-import org.koin.core.module.Module
-import org.koin.ktor.plugin.koin
 import kotlin.system.measureTimeMillis
 
 /**
  * Attach particular app modules (routing, handlers, DI, services, etc.)
+ * @param modules Modules to be attached. Order of modules is important (DI is initialized in order of modules)
+ *
+ * - register dependency injection modules (expose services) @see [ApplicationModule.registerDiProvider]
+ * - register routing - @see [ApplicationModule.routing]
  */
-fun Application.configureApplicationModules() {
+fun Application.attachApplicationModules() {
 
-    // needed fot typed-safe routing with parameters
-    install(Resources)
+    enableResourceRouting()
 
-    // order of modules is important (DI is initialized in order of modules)
     val modules: List<ApplicationModule> = listOf(
         AppModule(),
-        ArticleModule(),
+        ArticleModule()
+        // add more modules here
     )
 
-    // register dependency injection modules (expose services)
-    modules.forEach {
-        koin {
-            modules(it.dependencyInjectionModules())
-        }
+    modules.forEach { module ->
+        module.registerRouting()
     }
 
-    // register routing
-    modules.forEach {
-        it.routing()
-    }
+    modules.forEach { module -> module.onStart() }
 
 
-    // graceful shutdown modules
+    /**
+     * graceful shutdown modules @see [ApplicationModule.onShutdown]
+     */
     onShutdown {
-        log.info("ApplicationModules.onShutdown started")
+        val asyncShutdown = config().shutdownHooksAsync
+        val asyncLabel = if (asyncShutdown) "async" else "sync"
+        log.info("ApplicationModules.onShutdown started ($asyncLabel)")
 
         val time = measureTimeMillis {
-            val hooks = modules.map {
+            val hooks = modules.reversed().map {
                 async {
                     try {
                         it.onShutdown()
@@ -60,7 +56,11 @@ fun Application.configureApplicationModules() {
 
             runBlocking(Dispatchers.Default) {
                 launch {
-                    hooks.awaitAll()
+                    if (asyncShutdown) {
+                        hooks.awaitAll()
+                    } else {
+                        hooks.forEach { it.await() }
+                    }
                 }
             }
         }
@@ -69,33 +69,5 @@ fun Application.configureApplicationModules() {
 
 }
 
-abstract class ApplicationModule : KoinComponent {
-    val config by lazy { application.config() }
-    val application: Application by inject()
-    val loggerService: LoggerService by inject()
-    val name = this::class.simpleName.toString()
-    val logger by lazy {
-        loggerService.createLogger(name)
-    }
+fun Application.enableResourceRouting() = pluginOrNull(Resources) ?: install(Resources)
 
-    /**
-     * register routing
-     */
-    abstract fun routing(): Unit
-
-    /**
-     * register dependency injection modules (koin)
-     */
-    abstract fun dependencyInjectionModules(): List<Module>
-
-    /**
-     * On graceful shutdown release resources, close connections, close websockets etc.
-     * All exceptions are handled in onShutdown hook itself
-     */
-    abstract suspend fun onShutdown()
-
-    /**
-     * Cant be static because it looks like abstract class doesn't have public static properties
-     */
-
-}

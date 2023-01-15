@@ -1,6 +1,5 @@
 package cz.danielkouba.ktorStarterpackDk.configuration
 
-import ch.qos.logback.classic.Level
 import cz.danielkouba.ktorStarterpackDk.modules.logger.LoggerService
 import org.koin.ktor.ext.inject
 import io.ktor.server.plugins.callloging.*
@@ -20,6 +19,7 @@ fun Application.configureLogging() {
     val config = this.config()
 
     /**
+     * LoggerService DI provider is registered in [Application.configureDependencyInjection]
      * @see [LoggerService.configureLoggerContext]
      */
     val loggerService: LoggerService by inject()
@@ -34,6 +34,9 @@ fun Application.configureLogging() {
         }
     }
 
+    /**
+     * Enables call duration in logs
+     */
     intercept(ApplicationCallPipeline.Setup) {
         call.attributes.put(CALL_START_TIME, LocalDateTime.now())
     }

@@ -25,6 +25,9 @@ fun ConfigFactoryFromEnv(file: String = ".env", dir: String = "./"): ConfigModel
         apiVersion = API_VERSION,
         logLevel = dotenv["LOG_LEVEL"]?.let { Level.toLevel(it) } ?: Level.INFO,
         logAppender = dotenv["LOG_APPENDER"]?.let { LoggerService.Appender.from(it) } ?: LoggerService.Appender.JSON,
+        shutdownGracefulPeriod = dotenv["SHUTDOWN_GRACEFUL_PERIOD"]?.toLong() ?: DEFAULT_SHUTDOWN_GRACEFUL_PERIOD,
+        shutdownTimeout = dotenv["SHUTDOWN_TIMEOUT"]?.toLong() ?: DEFAULT_SHUTDOWN_TIMEOUT,
+        shutdownHooksAsync = dotenv["SHUTDOWN_HOOKS_ASYNC"]?.toBoolean() ?: true,
         articleApi = ConfigModel.ConfigApi(
             url = dotenv["ARTICLE_API_URL"]
                 ?: configEnvMissing("ARTICLE_API_URL"),

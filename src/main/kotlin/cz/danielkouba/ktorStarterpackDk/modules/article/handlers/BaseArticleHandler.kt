@@ -1,28 +1,32 @@
 package cz.danielkouba.ktorStarterpackDk.modules.article.handlers
 
-import cz.danielkouba.ktorStarterpackDk.configuration.ReqContext
 import cz.danielkouba.ktorStarterpackDk.modules.article.ArticleService
 import cz.danielkouba.ktorStarterpackDk.configuration.ReqContextDeclaration
 import cz.danielkouba.ktorStarterpackDk.configuration.reqContext
 import cz.danielkouba.ktorStarterpackDk.lib.interfaces.ApplicationModel
 import cz.danielkouba.ktorStarterpackDk.lib.interfaces.ExportModel
-import cz.danielkouba.ktorStarterpackDk.lib.interfaces.RouteHandlerJson
+import cz.danielkouba.ktorStarterpackDk.lib.interfaces.RouteHandler
 import cz.danielkouba.ktorStarterpackDk.modules.article.ArticleExportService
 import cz.danielkouba.ktorStarterpackDk.modules.article.ArticleModule
 import io.ktor.http.*
-import io.ktor.server.application.*
+import io.ktor.server.application.ApplicationCall
+import io.ktor.server.plugins.requestvalidation.*
 import io.ktor.server.response.*
 
+sealed class ArticleRouteResult<T:ApplicationModel<T>> {
+    public class WithModel<T : ApplicationModel<T>>(
+        val model: T,
+        val statusCode: HttpStatusCode = HttpStatusCode.OK
+    ) : ArticleRouteResult<T>()
 
-data class ArticleResult<T>(
-    val model: ApplicationModel<T>,
-    val statusCode: HttpStatusCode = HttpStatusCode.OK,
-)
+    public class OnlyStatus<T : ApplicationModel<T>>(val statusCode: HttpStatusCode = HttpStatusCode.OK) :
+        ArticleRouteResult<T>()
+}
 
 abstract class BaseArticleHandler<T : ApplicationModel<T>>(
     protected val service: ArticleService,
     protected val exporter: ArticleExportService,
-) : RouteHandlerJson {
+) : RouteHandler {
 
     /**
      * Handle the route and return Serializable object or throw exception.
@@ -30,31 +34,29 @@ abstract class BaseArticleHandler<T : ApplicationModel<T>>(
      *
      * @see [configureErrorHandling]
      */
-    abstract suspend fun handle(call: ApplicationCall): ArticleResult<T>
+    abstract suspend fun handle(call: ApplicationCall): ArticleRouteResult<T>
 
     /**
      * Intermediary method for transforming internal model to external model.
      * Internal model can change in time, but API should have fixed contract
      */
-    open suspend fun transform(data: ArticleResult<T>): ExportModel<T> {
-//        return data.model as ExportModel<T>
-        @Suppress("UNCHECKED_CAST")
-        return exporter.export(data.model) as ExportModel<T>
-    }
+    open suspend fun exportable(model: T): ExportModel<T> = exporter.export(model)
 
     /**
-     * Handles the route and returns the result
+     * Handles the route request and respond the result
+     *
+     * Exceptions will be handled automatically by the app exception handler
+     * @see [Application.configureErrorHandling]
+     *
      * @param call ApplicationCall
      */
-    override suspend fun respondTo(call: ApplicationCall) {
-        val data = handle(call)
-        val transformed = transform(data)
-        call.respond(data.statusCode, transformed as Any)
+    override suspend fun respondTo(call: ApplicationCall) = when (val result = handle(call)) {
+        is ArticleRouteResult.WithModel<T> -> call.respond(result.statusCode, exportable(result.model))
+        is ArticleRouteResult.OnlyStatus<T> -> call.respond(result.statusCode)
     }
 
-    fun reqContext(call: ApplicationCall, configuration: ReqContextDeclaration? = null): ReqContext {
-        return call.reqContext(ArticleModule::class.simpleName.toString()) {
+    fun reqContext(call: ApplicationCall, configuration: ReqContextDeclaration? = null) =
+        call.reqContext(ArticleModule::class.simpleName.toString()) {
             configuration?.invoke(this)
         }
-    }
 }

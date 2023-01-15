@@ -55,14 +55,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Article"
+              $ref: "#/components/schemas/ArticleCreate"
       responses:
         "201":
           description: "Created"
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Article"
+                $ref: "#/components/schemas/ArticleCreate"
         "420":
           description: "Validation Error"
         "409":
@@ -113,7 +113,7 @@ paths:
         content:
         application/json:
           schema:
-          $ref: "#/components/schemas/Article"
+          $ref: "#/components/schemas/ArticleUpdate"
       responses:
         "200":
         description: "OK"
@@ -134,7 +134,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-
     delete:
       description: "Deletes a article by its ID"
       parameters:
@@ -144,8 +143,44 @@ paths:
           schema:
             type: "string"
       responses:
+        "204":
+          description: "OK - (No Content)"
+  /articles/{id}/rate/{rating}:
+    post:
+      description: "Rate a article by its ID"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "rating"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            minimum: 1
+            maximum: 5
+            example: 3
+      responses:
         "200":
           description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Article"
+        "404":
+          description: "Not Found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "420":
+          description: "Validation Error"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /swagger:
     get:
       summary: "Get Swagger UI"
@@ -177,8 +212,21 @@ components:
         status:
           type: integer
           example: 404
+    DateTime:
+      type: string
+      format: date-time
+      example: "2019-01-01T00:00:00.000Z"
+    ArticleStatus:
+      type: string
+      enum:
+        - "DRAFT"
+        - "PUBLISHED"
+        - "HIDDEN"
+        - "DELETED"
+      example: "PUBLISHED"
     Article:
       type: "object"
+      required: [ "id", "title", "text","createdAt","rating","rateCount","status" ]
       properties:
         id:
           type: "string"
@@ -187,9 +235,7 @@ components:
         text:
           type: "string"
         createdAt:
-          type: "string"
-          format: "date-time"
-          example: "2019-01-01T00:00:00.000Z"
+          $ref: "#/components/schemas/DateTime"
         rating:
           type: "float"
           minimum: 0
@@ -200,12 +246,7 @@ components:
           minimum: 0
           example: 1
         status:
-          type: "string"
-          enum:
-            - "DRAFT"
-            - "PUBLISHED"
-            - "DELETED"
-          example: "PUBLISHED"
+          $ref: "#/components/schemas/ArticleStatus"
     ArticleCollection:
       type: "object"
       required: [ items, hits ]
@@ -216,3 +257,15 @@ components:
             $ref: "#/components/schemas/Article"
         hits:
           type: "integer"
+    ArticleCreate:
+      type: "object"
+      required: [ "title", "text" ,"status" ]
+      properties:
+        title:
+          type: "string"
+        text:
+          type: "string"
+        status:
+          $ref: "#/components/schemas/ArticleStatus"
+    ArticleUpdate:
+      $ref: "#/components/schemas/ArticleCreate"

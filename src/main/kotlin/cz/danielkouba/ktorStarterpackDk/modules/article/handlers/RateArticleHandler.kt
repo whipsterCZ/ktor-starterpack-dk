@@ -6,25 +6,20 @@ import cz.danielkouba.ktorStarterpackDk.modules.article.Articles
 import cz.danielkouba.ktorStarterpackDk.modules.article.model.Article
 import io.ktor.server.application.ApplicationCall
 
-class GetArticleHandler(
+class RateArticleHandler(
     service: ArticleService,
     exporter: ArticleExportService,
-    private val article: Articles.Article
+    private val rate: Articles.Article.Rate
 ) : BaseArticleHandler<Article>(service, exporter) {
 
-    /**
-     * Handle the route and return Serializable object or throw exception.
-     * Exceptions will be handled automatically by the app exception handler
-     *
-     * @see [configureErrorHandling]
-     */
     override suspend fun handle(call: ApplicationCall): ArticleRouteResult<Article> {
         val context = reqContext(call)
 
         /**
-         * get article if exist - throw [NotFoundException] which is handled globally..
+         * rate article or throw [NotFoundException] if article doesn't exist.
+         * The exception is handled globally.
          */
-        val article = service.findArticleById(article.id, context)
+        val article = service.rateArticle(rate.parent.id, rate.rating, context)
 
         return ArticleRouteResult.WithModel(article)
     }

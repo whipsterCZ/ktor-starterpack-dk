@@ -10,7 +10,7 @@ import io.ktor.server.application.ApplicationCall
 interface RouteHandler {
 
     /**
-     * Handles the route and response with [HttpStatusCode] and [Any] result
+     * Handles the route request and respond with [HttpStatusCode] and [Any] result
      * @param call ApplicationCall
      * Exceptions will be handled automatically by the app exception handler (see [configureErrorHandling])
      */

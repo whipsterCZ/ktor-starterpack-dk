@@ -12,15 +12,13 @@ class GetArticlesHandler(
     private val articles: Articles
 ) : BaseArticleHandler<ArticleCollection>(service, exporter) {
 
-    override suspend fun handle(call: ApplicationCall): ArticleResult<ArticleCollection> {
+    override suspend fun handle(call: ApplicationCall): ArticleRouteResult<ArticleCollection> {
         val context = reqContext(call)
 
-        return ArticleResult(
-            if (articles.status != null) {
-                service.findArticlesByStatus(articles.status, context)
-            } else {
-                service.findAllArticles(context)
-            },
-        )
+        val articleCollection = articles.status?.let {
+            service.findArticlesByStatus(it, context)
+        } ?: service.findAllArticles(context)
+
+        return ArticleRouteResult.WithModel(articleCollection)
     }
 }
