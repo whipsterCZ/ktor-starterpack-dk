@@ -13,17 +13,17 @@ import io.ktor.server.application.ApplicationCall
 import io.ktor.server.plugins.requestvalidation.*
 import io.ktor.server.response.*
 
-sealed class ArticleRouteResult<T:ApplicationModel<T>> {
-    public class WithModel<T : ApplicationModel<T>>(
+sealed class ArticleRouteResult<T> {
+    public class WithModel<T>(
         val model: T,
         val statusCode: HttpStatusCode = HttpStatusCode.OK
     ) : ArticleRouteResult<T>()
 
-    public class OnlyStatus<T : ApplicationModel<T>>(val statusCode: HttpStatusCode = HttpStatusCode.OK) :
+    public class OnlyStatus<T>(val statusCode: HttpStatusCode = HttpStatusCode.OK) :
         ArticleRouteResult<T>()
 }
 
-abstract class BaseArticleHandler<T : ApplicationModel<T>>(
+abstract class BaseArticleHandler<T: ApplicationModel>(
     protected val service: ArticleService,
     protected val exporter: ArticleExportService,
 ) : RouteHandler {
@@ -40,7 +40,7 @@ abstract class BaseArticleHandler<T : ApplicationModel<T>>(
      * Intermediary method for transforming internal model to external model.
      * Internal model can change in time, but API should have fixed contract
      */
-    open suspend fun exportable(model: T): ExportModel<T> = exporter.export(model)
+    open suspend fun exportable(model: T): ExportModel = exporter.export(model)
 
     /**
      * Handles the route request and respond the result

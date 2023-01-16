@@ -32,18 +32,17 @@ fun Application.configureErrorHandling() {
             HttpStatusCode.Forbidden,
             HttpStatusCode.Unauthorized,
         ) { call, status ->
-            errorHandler.respond(call, status)
+            errorHandler.respond(call, status, status.toString())
         }
 
         exception<NotFoundException> { call, cause ->
             errorHandler.logAndRespond(call, HttpStatusCode.NotFound, cause)
         }
         exception<IllegalArgumentException> { call, cause ->
-            errorHandler.logAndRespond(call, HttpStatusCode.UnprocessableEntity, cause)
+            errorHandler.logAndRespond(call, HttpStatusCode.InternalServerError, cause)
         }
         exception<RequestValidationException> { call, cause ->
-            errorHandler.log( HttpStatusCode.UnprocessableEntity, cause.reasons.joinToString())
-            errorHandler.respond(call, HttpStatusCode.UnprocessableEntity, cause)
+            errorHandler.logAndRespond(call, HttpStatusCode.UnprocessableEntity, cause.reasons.joinToString())
         }
         exception<BadRequestException> { call, cause ->
             errorHandler.logAndRespond(call, HttpStatusCode.BadRequest, cause)
@@ -61,15 +60,20 @@ class ErrorHandler(val logger: Logger, val acceptTypeSensitive: Boolean, val sta
 
     suspend fun logAndRespond(call: ApplicationCall, status: HttpStatusCode, cause: Throwable? = null) {
         log(status, cause)
-        respond(call, status, cause)
+        respond(call, status, cause?.toString() ?: status.toString())
+    }
+
+    suspend fun logAndRespond(call: ApplicationCall, status: HttpStatusCode, message: String) {
+        log(status, message)
+        respond(call, status, message)
     }
 
     suspend fun log(status: HttpStatusCode, cause: Throwable? = null) {
         if (cause != null) {
             if (stackTrace) {
-                logger.error("$status - Unhandled exception ${cause.message}", cause)
+                logger.error("$status - ${cause.message}", cause)
             } else {
-                logger.error("$status - Unhandled exception ${cause.message}")
+                logger.error("$status - ${cause.message}")
             }
         } else {
             logger.error("$status")
@@ -78,21 +82,9 @@ class ErrorHandler(val logger: Logger, val acceptTypeSensitive: Boolean, val sta
 
     suspend fun log(status: HttpStatusCode, message: String?) {
         if (message != null) {
-            logger.error("$status - Unhandled error $message")
+            logger.error("$status - $message")
         } else {
             logger.error("$status")
-        }
-    }
-
-    suspend fun respond(
-        call: ApplicationCall,
-        status: HttpStatusCode,
-        cause: Throwable? = null,
-    ) {
-        if (acceptJson(call)) {
-            respondJson(call, status)
-        } else {
-            respondText(call, status, cause)
         }
     }
 
@@ -102,33 +94,13 @@ class ErrorHandler(val logger: Logger, val acceptTypeSensitive: Boolean, val sta
         message: String
     ) {
         if (acceptJson(call)) {
-            respondJson(call, status)
+            call.respond(status, ErrorResponse(status.value, message))
         } else {
-            respondText(call, status, message)
+            call.respondText(
+                text = "$status: $message",
+                status = status,
+            )
         }
-    }
-
-    suspend fun respondJson(call: ApplicationCall, status: HttpStatusCode, cause: Throwable? = null) {
-        val message = if (cause != null) cause.message else status.toString()
-        call.respond(status, ErrorResponse(status.value, message))
-    }
-
-    suspend fun respondJson(call: ApplicationCall, status: HttpStatusCode, message: String) {
-        call.respond(status, ErrorResponse(status.value, message))
-    }
-
-    suspend fun respondText(call: ApplicationCall, status: HttpStatusCode, cause: Throwable? = null) {
-        call.respondText(
-            text = if (cause == null) "$status" else "$status: $cause",
-            status = status,
-        )
-    }
-
-    suspend fun respondText(call: ApplicationCall, status: HttpStatusCode, message: String) {
-        call.respondText(
-            text = "$status: $message",
-            status = status,
-        )
     }
 
     fun acceptJson(call: ApplicationCall): Boolean {

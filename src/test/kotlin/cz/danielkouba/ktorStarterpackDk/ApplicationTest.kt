@@ -15,7 +15,7 @@ class ApplicationTest {
         }
         client.get("/health").apply {
 //            assertEquals(HttpStatusCode.OK, status)
-//            println(bodyAsText())
+            println(bodyAsText())
             //assertEquals(mapOf("status" to "up"), this.bodyAsText())
         }
     }

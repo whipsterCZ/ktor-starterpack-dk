@@ -27,7 +27,7 @@ data class ArticleExportV1(
     val rating: Float?,
     val rateCount: Int,
     private val status: ArticleStatus
-) : ExportModel<Article> {
+) : ExportModel {
     constructor(model: Article) : this(
         id = model.id,
         title = model.title,
@@ -49,7 +49,7 @@ data class ArticleExportV1(
 data class ArticleCollectionExportV1(
     val items: List<ArticleExportV1>,
     val hits: Int
-) : ExportModel<ArticleCollection> {
+) : ExportModel {
 
     init {
         validateAndThrow()

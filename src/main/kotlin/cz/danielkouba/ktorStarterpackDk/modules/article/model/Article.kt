@@ -37,7 +37,7 @@ data class Article(
     override val rating: Float? = null,
     override val rateCount: Int = 0,
     override val status: ArticleStatus = ArticleStatus.DRAFT
-) : ApplicationModel<Article>, ArticleWithIdInterface {
+) : ApplicationModel, ArticleWithIdInterface {
 
     init {
         validateAndThrow()
@@ -49,7 +49,7 @@ data class Article(
 data class ArticleCollection(
     val items: List<Article>,
     val hits: Int
-) : ApplicationModel<ArticleCollection> {
+) : ApplicationModel {
     init {
         validateAndThrow()
     }
@@ -64,7 +64,7 @@ data class ArticleCreate(
     override val createdAt: ZonedDateTime = ZonedDateTime.now(),
     override val rating: Float? = null,
     override val rateCount: Int = 0,
-) : ApplicationModel<ArticleCreate>, ArticleInterface {
+) : ApplicationModel, ArticleInterface {
     init {
         validateAndThrow()
     }
@@ -80,7 +80,7 @@ data class ArticleUpdate(
     override val createdAt: ZonedDateTime = ZonedDateTime.now(),
     override val rating: Float? = null,
     override val rateCount: Int = 0,
-) : ApplicationModel<ArticleUpdate>, ArticleInterface {
+) : ApplicationModel, ArticleInterface {
 
     init {
         validateAndThrow()

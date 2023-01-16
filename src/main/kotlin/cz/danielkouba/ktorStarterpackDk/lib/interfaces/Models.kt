@@ -9,41 +9,41 @@ import io.ktor.server.plugins.requestvalidation.*
  *
  * NOTE: This is definitely not for external API communication nor any IO Request data.
  */
-interface ApplicationModel<T> : ValidatedModel<T>
+interface ApplicationModel : ValidatedModel
 
 /**
  * Interface for all IO models (API Contract)
  * Model is used for external communication with clients
  */
-interface ApplicationContractModel<T>
+interface ApplicationContractModel : ValidatedModel
 
 /**
  * Interface for all outgoing models in Response Body (API Contract)
  * Model is used for external communication with clients
  */
-interface ExportModel<T> : ApplicationContractModel<T>, ValidatedModel<T>
+interface ExportModel : ApplicationContractModel
 
 /**
  * Interface for all incoming models in Request Body (API Contract)
  * Model is used for external communication with clients
  */
-interface ImportModel<T> : ApplicationContractModel<T> {
-    abstract fun toModel(): T
+interface ImportModel : ApplicationContractModel {
+    abstract fun toModel(): ApplicationModel
 }
 
 /**
  * Interface for all external models (3rd party API)
  * Model is used external API models (client requests and responses)
  */
-interface ExternalModel<T> : ValidatedModel<T>
+interface ExternalModel : ValidatedModel
 
-interface ExternalImportModel<T> : ExternalModel<T> {
-    abstract fun toModel(): T
+interface ExternalImportModel : ExternalModel {
+    abstract fun toModel(): ApplicationModel
 }
 
-interface ExternalExportModel<T> : ExternalModel<T>
+interface ExternalExportModel : ExternalModel
 
-interface ValidatedModel<T> {
+interface ValidatedModel {
 
     /**
      * Validate model and return ValidationResult

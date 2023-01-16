@@ -35,11 +35,6 @@ abstract class ApplicationModule : KoinComponent {
         loggerService.createLogger(name)
     }
 
-    init {
-        logger.debug("$name init")
-        application.enableResourceRouting()
-    }
-
     /**
      * Register dependency injection providers for KOIN
      * it should be called in init block
@@ -72,4 +67,5 @@ abstract class ApplicationModule : KoinComponent {
      */
     fun onStart(): Unit {}
 
+    fun enableResourceRouting() = application.enableResourceRouting()
 }

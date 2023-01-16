@@ -35,6 +35,8 @@ I hope it helps you! Feel free leave feedback or your ideas (Code review appreci
 - Prometheus
 - REST API
 
+## Design
+![alt Design model UML](docs/model_uml.png)
 
 ## Running
 
@@ -82,7 +84,7 @@ see `.env.sample` file
 - [x] Configuration using .env file
 - [x] Dependency Injection [Koin](https://insert-koin.io/)
 - [x] App structure (Modules)
-- [ ] Logging  [configure runtime](https://stackoverflow.com/questions/16910955/programmatically-configure-logback-appender)
+- [x] Logging  [configure runtime](https://stackoverflow.com/questions/16910955/programmatically-configure-logback-appender)
   - [x] LoggerService
   - [ ] !!!separated LoggerContext
   - [ ] Check if all logs are compatible with ELK (fe: mal-disc-repo)
@@ -90,9 +92,7 @@ see `.env.sample` file
   - [x] MethodCalled meta
   - [x] Request logging with correct scope and loggerName
 - [ ] Error Handling
-  - [ ] check logger with exception
-  - [ ] check different error in route handlers (404, 500, etc)
-  - [ ] check service error handling
+  - [x] Global handling of NotFoundException, RequestValidationException, BadRequestException, IllegalArgumentException, etc 
 - [x] Monitoring
   - [x] `/metrics` endpoint (prometheus)
     - [] Metrics correct names and units
@@ -112,8 +112,7 @@ see `.env.sample` file
   - [x] Model
   - [x] ModelExporter (versioned JSON export)
   - [ ] Tests
-  - [ ] Request validation
-  - [ ] POST, PUT handle external models  // TODO("mocked now..")
+  - [x] Request validation
   - [x] RequestContext (contextual logger and metadata) @see `plugins/RequestContext.kt`
 - [x] Root ApiInfo endpoint `/` (version, build, swagger, urls, etc)
 - [x] Graceful shutdown

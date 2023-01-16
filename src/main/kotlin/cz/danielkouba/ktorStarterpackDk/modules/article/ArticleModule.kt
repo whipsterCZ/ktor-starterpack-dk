@@ -42,6 +42,8 @@ class ArticleModule : ApplicationModule() {
     private val exporterV1: ArticleExportService by inject { parametersOf("v1") }
 
     init {
+        logger.debug("$name init")
+        enableResourceRouting()
         registerDiProvider(ArticleDIProvider(config))
     }
 
