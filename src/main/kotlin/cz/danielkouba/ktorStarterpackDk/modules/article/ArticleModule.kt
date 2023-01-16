@@ -4,6 +4,7 @@ import cz.danielkouba.ktorStarterpackDk.lib.model.ApplicationModule
 import cz.danielkouba.ktorStarterpackDk.modules.article.handlers.*
 import cz.danielkouba.ktorStarterpackDk.modules.article.model.ArticleCreateImportV1
 import cz.danielkouba.ktorStarterpackDk.modules.article.model.ArticleStatus
+import cz.danielkouba.ktorStarterpackDk.modules.article.model.ArticleUpdateImportV1
 import io.ktor.http.*
 import io.ktor.resources.*
 import io.ktor.server.application.*
@@ -50,7 +51,8 @@ class ArticleModule : ApplicationModule() {
     override fun registerRouting() = routing {
         route("v1") {
             install(RequestValidation) {
-//                validate(ArticleCreateImportV1::class) { it.validate() }
+                validate(ArticleCreateImportV1::class) { it.validate() }
+                validate(ArticleUpdateImportV1::class) { it.validate() }
             }
             get<Articles> {
                 GetArticlesHandler(service, exporterV1, it).respondTo(call)

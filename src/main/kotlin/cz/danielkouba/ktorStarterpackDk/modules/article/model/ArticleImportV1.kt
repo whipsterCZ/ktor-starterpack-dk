@@ -1,8 +1,8 @@
 package cz.danielkouba.ktorStarterpackDk.modules.article.model
 
 import cz.danielkouba.ktorStarterpackDk.lib.interfaces.ImportModel
-import cz.danielkouba.ktorStarterpackDk.modules.article.validators.ArticleImportValidatorV1
-import io.ktor.server.plugins.requestvalidation.*
+import cz.danielkouba.ktorStarterpackDk.modules.article.validators.ArticleCreateImportValidatorV1
+import cz.danielkouba.ktorStarterpackDk.modules.article.validators.ArticleUpdateImportValidatorV1
 import kotlinx.serialization.Serializable
 
 /**
@@ -37,7 +37,7 @@ data class ArticleCreateImportV1(
         )
     }
 
-    override fun validate() = ArticleImportValidatorV1(this).validate()
+    override fun validate() = ArticleCreateImportValidatorV1(this).validate()
 
 }
 
@@ -65,5 +65,7 @@ data class ArticleUpdateImportV1(
             status = status,
         )
     }
+
+    override fun validate() = ArticleUpdateImportValidatorV1(this).validate()
 
 }

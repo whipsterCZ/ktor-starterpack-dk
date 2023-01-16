@@ -3,6 +3,7 @@ package cz.danielkouba.ktorStarterpackDk.configuration
 import cz.danielkouba.ktorStarterpackDk.lib.model.ApplicationModule
 import cz.danielkouba.ktorStarterpackDk.modules.app.AppModule
 import cz.danielkouba.ktorStarterpackDk.modules.article.ArticleModule
+import cz.danielkouba.ktorStarterpackDk.modules.test.TestModule
 import io.ktor.server.application.*
 import io.ktor.server.resources.*
 import kotlinx.coroutines.*
@@ -21,7 +22,8 @@ fun Application.attachApplicationModules() {
 
     val modules: List<ApplicationModule> = listOf(
         AppModule(),
-        ArticleModule()
+        ArticleModule(),
+        TestModule(),
         // add more modules here
     )
 
@@ -30,7 +32,6 @@ fun Application.attachApplicationModules() {
     }
 
     modules.forEach { module -> module.onStart() }
-
 
     /**
      * graceful shutdown modules @see [ApplicationModule.onShutdown]
