@@ -95,9 +95,14 @@ see `.env.sample` file
   - [x] Global handling of NotFoundException, RequestValidationException, BadRequestException, IllegalArgumentException, etc 
 - [x] Monitoring
   - [x] `/metrics` endpoint (prometheus)
-    - [] Metrics correct names and units
+    - [] Metrics correct names and units (don't know how...it looks like its impossible) https://www.robustperception.io/who-wants-seconds/ 
     - [x] `/health` Health Check
-  - [!!!] serialization
+- [!!!] serialization
+- [x] Validation
+  - [x] Request & Internal & Response Validation
+  - [x] Custom solution - KTOR RequestValidationPlugin is just not good enough
+  - [x] Validation with nice error messages @see [ValidationException]
+  - [x] Extendable validation
 - [ ] Testing
   - [ ] Testing EP with snapshots
   - [ ] Example module test (ArticleModule)
@@ -112,7 +117,7 @@ see `.env.sample` file
   - [x] Model
   - [x] ModelExporter (versioned JSON export)
   - [ ] Tests
-  - [x] Request validation
+  - [x] Request & Response validation
   - [x] RequestContext (contextual logger and metadata) @see `plugins/RequestContext.kt`
 - [x] Root ApiInfo endpoint `/` (version, build, swagger, urls, etc)
 - [x] Graceful shutdown
@@ -125,10 +130,14 @@ see `.env.sample` file
 - [ ] Logger shared context - Not working properly (context should be owned by every child)
 - [ ] CallLogging sets custom logger (app.router) - but it is used by KTOR system logging...  
 - [ ] Serializer for LogLevel doesn't work @see `/lib/serializers/LogLevelSerializer.kt`"
-- [ ] Resource param validation wierdness (KTOR)
+- [ ] Metrics are in default second units (prometheus default) - im was unable to change it to milliseconds
+   - [maybe its intentional and it can't be changed](https://www.robustperception.io/who-wants-seconds/)
+   - we can maybe try Dropwizard instead of Micrometer
+- [ ] Resource param validation weirdness (KTOR)
   - if http://0.0.0.0:3000/v1/articles?status=NEEXISTUJE  
   -  first time i have correct 400 BadRequest:  `cz.danielkouba.ktorStarterpackDk.modules.article.model.ArticleStatus does not contain element with name 'PUBLISHEDs'`
   -  second time i have wierd  400 BadRequest: `io.ktor.server.plugins.BadRequestException: Can't transform call to resource`
+  - solvable with custom validation (don't use any Enums as types)
   
 ```
   ____     __  __        __  __     ______   ______     ______

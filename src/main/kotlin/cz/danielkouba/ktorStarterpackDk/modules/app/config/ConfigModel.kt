@@ -33,6 +33,7 @@ data class ConfigModel constructor(
     val shutdownTimeout: Long = DEFAULT_SHUTDOWN_TIMEOUT,
     val shutdownHooksAsync: Boolean = true,
     val articleApi: ConfigApi,
+    val metricsPrefix: String = "http_request_duration",
 ) {
     fun isDevelopment() = environment.isDevelopment()
     fun isProduction() = environment.isProduction()

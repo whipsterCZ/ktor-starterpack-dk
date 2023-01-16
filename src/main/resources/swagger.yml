@@ -65,6 +65,10 @@ paths:
                 $ref: "#/components/schemas/ArticleCreate"
         "420":
           description: "Validation Error"
+          content:
+              application/json:
+              schema:
+                  $ref: "#/components/schemas/ValidationError"
         "409":
           description: "Duplicate"
           content:
@@ -127,13 +131,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-
         "420":
           description: "Validation Error"
           content:
             application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+            schema:
+              $ref: "#/components/schemas/ValidationError"
     delete:
       description: "Deletes a article by its ID"
       parameters:
@@ -180,7 +183,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: "#/components/schemas/ValidationError"
   /swagger:
     get:
       summary: "Get Swagger UI"
@@ -212,6 +215,29 @@ components:
         status:
           type: integer
           example: 404
+    ValidationError:
+      type: object
+      required:
+        - errorMessage, status, validationErrors
+      properties:
+        errorMessage:
+          type: string
+          example: "420 Unprocessable Entity"
+        status:
+          type: integer
+          example: 420
+        validationErrors:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+              code:
+                type: string
+                example: "REQUIRED"
+              message:
+                type: string
     DateTime:
       type: string
       format: date-time
