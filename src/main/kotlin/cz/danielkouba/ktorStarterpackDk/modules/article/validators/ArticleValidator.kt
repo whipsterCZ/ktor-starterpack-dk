@@ -1,65 +1,82 @@
 package cz.danielkouba.ktorStarterpackDk.modules.article.validators
 
-import cz.danielkouba.ktorStarterpackDk.lib.model.BaseValidator
+import cz.danielkouba.ktorStarterpackDk.lib.model.ValidationError
+import cz.danielkouba.ktorStarterpackDk.lib.model.Validator
 import cz.danielkouba.ktorStarterpackDk.modules.article.model.*
-import io.ktor.server.plugins.requestvalidation.ValidationResult
 import java.time.ZonedDateTime
 
-sealed class ArticleBaseValidator<T : ArticleInterface>(model: T) : BaseValidator<T>(model) {
+sealed class ArticleBaseValidator<T : ArticleInterface>(val model: T) : Validator() {
     fun commonValidations(id: String? = null) {
         with(model) {
             id?.let {
-                check(it.isNotBlank(), "Article id must not be blank")
+                notEmpty("id", id, "Article id must not be blank")
             }
-            check(title.isNotBlank(), "Article $id title must not be blank")
-            check(text.isNotBlank(), "Article $id text must not be blank")
-            check(rateCount >= 0, "Article $id rate count must not be negative")
-            rating?.let {
-                check(it in 0.0..5.0, "Article $id rating must be in range 0.0..5.0")
+            notEmpty("title", title, "Article $id title must not be blank")
+            notEmpty("text", text, "Article $id text must not be blank")
+            check(rateCount >= 0) {
+                ValidationError.Bounds("rateCount", "Article $id rate count must not be negative")
             }
-            check(
-                createdAt.isBefore(ZonedDateTime.now()),
-                "Article $id creation date must be in the past"
-            )
+            if (rateCount > 0) {
+                required("rating", rating, "Article $id rating must be set (rate count > 0)")
+                rating?.let {
+                    check(it in 1F..5F) {
+                        ValidationError.Bounds("rating", "Article $id rating must be in range 1..5 ($it)")
+                    }
+                }
+            }
+            check(createdAt.isBefore(ZonedDateTime.now())) {
+                ValidationError.Bounds("createdAt", "Article $id creation date must be in the past ($createdAt)")
+            }
         }
     }
 }
 
 class ArticleValidator(model: Article) : ArticleBaseValidator<Article>(model) {
-    override fun validate(): ValidationResult {
+    override fun validationErrors(): List<ValidationError> {
         commonValidations(model.id)
-        return createValidationResult()
+        return errors
     }
 }
 
 class ArticleCreateValidator(model: ArticleCreate) : ArticleBaseValidator<ArticleCreate>(model) {
-    override fun validate(): ValidationResult {
+    override fun validationErrors(): List<ValidationError>? {
         commonValidations()
 
         with(model) {
-            check(
-                createdAt.isAfter(ZonedDateTime.now().minusDays(1)),
-                "New Article creation date must be in the last 24 hours"
-            )
-            check(rating == null, "New Article rating must be null")
-            check(rateCount == 0, "New  Article rate count must be 0")
-            check(status != ArticleStatus.DELETED, "New Article status must not be DELETED")
+            check(createdAt.isAfter(ZonedDateTime.now().minusDays(1))) {
+                ValidationError.Bounds("createdAt", "New Article creation date must be in the last 24 hours")
+            }
+            check(rating == null) {
+                ValidationError.Invalid("rating", "New Article rating can't be already set")
+            }
+            check(rateCount == 0) {
+                ValidationError.Invalid("rateCount", "New Article rate count must be 0")
+            }
+            check(status != ArticleStatus.DELETED) {
+                ValidationError.Invalid("status", "New Article status must not be DELETED")
+            }
         }
-        return createValidationResult()
+        return super.validationErrors()
     }
 }
+
 
 class ArticleUpdateValidator(model: ArticleUpdate) : ArticleBaseValidator<ArticleUpdate>(model) {
-    override fun validate(): ValidationResult {
+    override fun validationErrors(): List<ValidationError> {
         commonValidations()
-        return createValidationResult()
+        return errors
     }
 }
 
-class ArticleCollectionValidator(model: ArticleCollection) : BaseValidator<ArticleCollection>(model) {
-    override fun validate(): ValidationResult {
-        // items are validated by its own validator
-        check(model.hits >= 0, "Article collection hits must not be negative")
-        return createValidationResult()
+
+class ArticleCollectionValidator(val model: ArticleCollection) : Validator() {
+    override fun validationErrors(): List<ValidationError> {
+
+        // collection items are validated by its own validator [ArticleValidator]
+
+        check(model.hits >= 0) {
+            ValidationError.Bounds("hits", "ArticleCollection hits must not be negative")
+        }
+        return errors
     }
 }

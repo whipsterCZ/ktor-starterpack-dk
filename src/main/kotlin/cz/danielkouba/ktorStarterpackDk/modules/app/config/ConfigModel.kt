@@ -3,7 +3,8 @@ package cz.danielkouba.ktorStarterpackDk.modules.app.config
 import ch.qos.logback.classic.Level
 import cz.danielkouba.ktorStarterpackDk.lib.serializers.LogLevelSerializer
 import cz.danielkouba.ktorStarterpackDk.modules.logger.LoggerService
-import kotlinx.serialization.*
+import kotlinx.serialization.Contextual
+import kotlinx.serialization.Serializable
 
 const val DEFAULT_PORT = 8080
 const val DEFAULT_HOST = "0.0.0.0"

@@ -1,6 +1,7 @@
 package cz.danielkouba.ktorStarterpackDk.lib.interfaces
 
-import io.ktor.server.plugins.requestvalidation.*
+import cz.danielkouba.ktorStarterpackDk.lib.model.ValidationError
+import cz.danielkouba.ktorStarterpackDk.lib.model.ValidationException
 
 /**
  * Interface for all internal models.
@@ -48,16 +49,13 @@ interface ValidatedModel {
     /**
      * Validate model and return ValidationResult
      */
-    fun validate(): ValidationResult
+    fun validationErrors(): List<ValidationError>?
 
     /**
      * Validate model and throw exception if model is invalid (globally handled)
-     * @throws RequestValidationException
+     * @throws ValidationException
      */
-    fun validateAndThrow() {
-        val result = validate()
-        if (result is ValidationResult.Invalid) {
-            throw RequestValidationException(this, result.reasons)
-        }
+    fun validate() = validationErrors()?.let {
+        if (it.isNotEmpty()) throw ValidationException(this::class.simpleName.toString(), it)
     }
 }

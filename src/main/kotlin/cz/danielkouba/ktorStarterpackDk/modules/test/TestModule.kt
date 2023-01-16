@@ -1,14 +1,14 @@
 package cz.danielkouba.ktorStarterpackDk.modules.test
 
 import cz.danielkouba.ktorStarterpackDk.lib.model.ApplicationModule
+import cz.danielkouba.ktorStarterpackDk.lib.model.ValidationError
+import cz.danielkouba.ktorStarterpackDk.lib.model.ValidationException
 import cz.danielkouba.ktorStarterpackDk.modules.logger.LoggerTest
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.plugins.*
-import io.ktor.server.plugins.requestvalidation.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 
 class TestModule : ApplicationModule() {
@@ -37,13 +37,19 @@ class TestModule : ApplicationModule() {
                         throw NotFoundException("Not found")
                     }
                     get("/validation-error") {
-                        throw RequestValidationException("Validation error", arrayListOf("error1", "error2"))
+                        throw ValidationException(
+                            "Model",
+                            arrayListOf(
+                                ValidationError.Required("id"),
+                                ValidationError.Format("date", "Custom error message")
+                            )
+                        )
                     }
                     get("/illegal-argument") {
                         throw IllegalArgumentException("Invalid argument")
                     }
                     get("/bad-request") {
-                        throw BadRequestException("Bad request")
+                        throw BadRequestException("Bad request", cause = IllegalArgumentException("Invalid argument"))
                     }
                     get("/forbidden") {
                         call.respond(HttpStatusCode.Forbidden, "Forbidden")

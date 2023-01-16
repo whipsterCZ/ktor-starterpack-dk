@@ -1,21 +1,22 @@
 package cz.danielkouba.ktorStarterpackDk.modules.article.handlers
 
+import cz.danielkouba.ktorStarterpackDk.lib.model.RouteHandler
+import cz.danielkouba.ktorStarterpackDk.lib.model.RouteResult
 import cz.danielkouba.ktorStarterpackDk.modules.article.ArticleExportService
 import cz.danielkouba.ktorStarterpackDk.modules.article.ArticleService
 import cz.danielkouba.ktorStarterpackDk.modules.article.Articles
 import cz.danielkouba.ktorStarterpackDk.modules.article.model.Article
-import cz.danielkouba.ktorStarterpackDk.modules.article.model.ArticleCreateImportV1
 import cz.danielkouba.ktorStarterpackDk.modules.article.model.ArticleUpdateImportV1
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 
 class UpdateArticleHandler(
-    service: ArticleService,
-    exportService: ArticleExportService,
+    private val service: ArticleService,
+    exporter: ArticleExportService,
     private val article: Articles.Article
-) : BaseArticleHandler<Article>(service, exportService) {
+) : RouteHandler<Article>(exporter) {
 
-    override suspend fun handle(call: ApplicationCall): ArticleRouteResult<Article> {
+    override suspend fun handle(call: ApplicationCall): RouteResult<Article> {
         val context = reqContext(call)
 
         // it is validated by the request validation plugin
@@ -30,7 +31,7 @@ class UpdateArticleHandler(
          */
         val updatedArticle = service.updateArticle(article.id, articleToBeUpdated, context)
 
-        return ArticleRouteResult.WithModel(updatedArticle)
+        return RouteResult.WithModel(updatedArticle)
     }
 
 }

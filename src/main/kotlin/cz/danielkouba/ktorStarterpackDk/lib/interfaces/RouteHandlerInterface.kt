@@ -2,12 +2,12 @@ package cz.danielkouba.ktorStarterpackDk.lib.interfaces
 
 import cz.danielkouba.ktorStarterpackDk.configuration.configureErrorHandling
 import io.ktor.http.*
-import io.ktor.server.application.ApplicationCall
+import io.ktor.server.application.*
 
 /**
  * Interface for all route handlers in application
  */
-interface RouteHandler {
+interface RouteHandlerInterface {
 
     /**
      * Handles the route request and respond with [HttpStatusCode] and [Any] result

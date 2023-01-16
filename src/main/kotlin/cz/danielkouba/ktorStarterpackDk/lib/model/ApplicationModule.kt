@@ -1,7 +1,7 @@
 package cz.danielkouba.ktorStarterpackDk.lib.model
 
-import cz.danielkouba.ktorStarterpackDk.configuration.config
 import cz.danielkouba.ktorStarterpackDk.configuration.attachApplicationModules
+import cz.danielkouba.ktorStarterpackDk.configuration.config
 import cz.danielkouba.ktorStarterpackDk.configuration.enableResourceRouting
 import cz.danielkouba.ktorStarterpackDk.modules.logger.LoggerService
 import io.ktor.server.application.*

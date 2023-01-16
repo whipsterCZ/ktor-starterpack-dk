@@ -1,16 +1,16 @@
 package cz.danielkouba.ktorStarterpackDk.configuration
 
 import cz.danielkouba.ktorStarterpackDk.modules.logger.LoggerService
-import org.koin.ktor.ext.inject
-import io.ktor.server.plugins.callloging.*
-import io.ktor.server.request.*
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.plugins.callid.*
+import io.ktor.server.plugins.callloging.*
+import io.ktor.server.request.*
 import io.ktor.util.*
+import org.koin.ktor.ext.inject
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
-import java.util.UUID
+import java.util.*
 
 val CALL_START_TIME = AttributeKey<LocalDateTime>("CallStartTime")
 

@@ -1,7 +1,7 @@
 package cz.danielkouba.ktorStarterpackDk.modules.app
 
 import cz.danielkouba.ktorStarterpackDk.configuration.Config
-import cz.danielkouba.ktorStarterpackDk.lib.interfaces.RouteHandler
+import cz.danielkouba.ktorStarterpackDk.lib.interfaces.RouteHandlerInterface
 import io.ktor.server.application.*
 import io.ktor.server.plugins.*
 import io.ktor.server.response.*
@@ -21,7 +21,7 @@ data class ApiInfo(
 
 typealias ApiInfoUrl = Map<String, String>
 
-class ApiInfoHandler() : RouteHandler {
+class ApiInfoHandler() : RouteHandlerInterface {
     override suspend fun respondTo(call: ApplicationCall) {
         val baseUri =
             "${call.request.origin.scheme}://${call.request.origin.serverHost}:${call.request.origin.serverPort}"

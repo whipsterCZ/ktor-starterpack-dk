@@ -1,8 +1,7 @@
 package cz.danielkouba.ktorStarterpackDk.modules.article.model
 
 import cz.danielkouba.ktorStarterpackDk.lib.interfaces.ImportModel
-import cz.danielkouba.ktorStarterpackDk.modules.article.validators.ArticleCreateImportValidatorV1
-import cz.danielkouba.ktorStarterpackDk.modules.article.validators.ArticleUpdateImportValidatorV1
+import cz.danielkouba.ktorStarterpackDk.lib.model.Validator
 import kotlinx.serialization.Serializable
 
 /**
@@ -19,7 +18,7 @@ import kotlinx.serialization.Serializable
  * Article import model (API Contract body request)
  *
  * No need to validate constraints for import models. It is validated by ApplicationModel.
- * @see [ArticleCreate.validate]
+ * @see [ArticleCreate.validationErrors]
  */
 @Serializable
 data class ArticleCreateImportV1(
@@ -29,15 +28,24 @@ data class ArticleCreateImportV1(
 ) : ImportModel {
 
     override fun toModel(): ArticleCreate {
-        val status = ArticleStatus.valueOf(status)
         return ArticleCreate(
             title = title,
             text = text,
-            status = status,
+            status = ArticleStatus.from(status),
         )
     }
 
-    override fun validate() = ArticleCreateImportValidatorV1(this).validate()
+    /**
+     * Validate import model.
+     * This example of using inline validator
+     */
+    override fun validationErrors() = Validator.createErrors {
+        with(this@ArticleCreateImportV1) {
+            notEmpty("title", title)
+            notEmpty("text", text)
+            tryCheck("status") { ArticleStatus.from(status) }
+        }
+    }
 
 }
 
@@ -45,8 +53,9 @@ data class ArticleCreateImportV1(
  * Article import model (API Contract body request)
  *
  * No need to validate constraints for import models. It is validated by ApplicationModel.
- * @see [ArticleUpdate.validate]
+ * @see [ArticleUpdate.validationErrors]
  */
+@Serializable
 data class ArticleUpdateImportV1(
     val title: String,
     val text: String,
@@ -55,17 +64,25 @@ data class ArticleUpdateImportV1(
 
     /**
      *  No need to validate import models.. it is validated via ApplicationModel
-     *  @see [ArticleUpdate.validate]
+     *  @see [ArticleUpdate.validationErrors]
      */
     override fun toModel(): ArticleUpdate {
-        val status = ArticleStatus.valueOf(status)
         return ArticleUpdate(
             title = title,
             text = text,
-            status = status,
+            status = ArticleStatus.from(status),
         )
     }
 
-    override fun validate() = ArticleUpdateImportValidatorV1(this).validate()
-
+    /**
+     * Validate import model.
+     * This example of using inline validator
+     */
+    override fun validationErrors() = Validator.createErrors {
+        with(this@ArticleUpdateImportV1) {
+            notEmpty("title", title)
+            notEmpty("text", text)
+            tryCheck("status") { ArticleStatus.from(status) }
+        }
+    }
 }

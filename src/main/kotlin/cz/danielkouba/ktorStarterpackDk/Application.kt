@@ -1,8 +1,6 @@
 package cz.danielkouba.ktorStarterpackDk
 
 import cz.danielkouba.ktorStarterpackDk.configuration.*
-import cz.danielkouba.ktorStarterpackDk.modules.app.AppModule
-import cz.danielkouba.ktorStarterpackDk.modules.article.ArticleModule
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.Netty

@@ -1,9 +1,9 @@
 package cz.danielkouba.ktorStarterpackDk.modules.article.model
 
 import cz.danielkouba.ktorStarterpackDk.lib.interfaces.ExportModel
+import cz.danielkouba.ktorStarterpackDk.lib.model.Validator
 import cz.danielkouba.ktorStarterpackDk.lib.serializers.ZonedDateTimeSerializer
 import cz.danielkouba.ktorStarterpackDk.modules.article.validators.ArticleExportValidatorV1
-import io.ktor.server.plugins.requestvalidation.*
 import kotlinx.serialization.Serializable
 import java.time.ZonedDateTime
 
@@ -27,7 +27,7 @@ data class ArticleExportV1(
     val rating: Float?,
     val rateCount: Int,
     private val status: ArticleStatus
-) : ExportModel {
+) : Validator(), ExportModel {
     constructor(model: Article) : this(
         id = model.id,
         title = model.title,
@@ -39,10 +39,16 @@ data class ArticleExportV1(
     )
 
     init {
-        validateAndThrow()
+        validate()
     }
 
-    override fun validate() = ArticleExportValidatorV1(this).validate()
+    /**
+     * Article export model could have different validation rules than internal model
+     *
+     * Example of implementing validation by inheriting directly from Validator class
+     */
+    override fun validationErrors() = ArticleExportValidatorV1(this).validationErrors()
+
 }
 
 @Serializable()
@@ -52,7 +58,7 @@ data class ArticleCollectionExportV1(
 ) : ExportModel {
 
     init {
-        validateAndThrow()
+        validate()
     }
 
     constructor(model: ArticleCollection) : this(
@@ -60,8 +66,5 @@ data class ArticleCollectionExportV1(
         hits = model.hits
     )
 
-    override fun validate(): ValidationResult {
-        // every item is validated in ArticleExportV1Model
-        return ValidationResult.Valid
-    }
+    override fun validationErrors() = null // every item is validated in ArticleExportV1Model
 }

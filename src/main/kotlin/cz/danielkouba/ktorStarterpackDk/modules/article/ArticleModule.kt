@@ -2,16 +2,13 @@ package cz.danielkouba.ktorStarterpackDk.modules.article
 
 import cz.danielkouba.ktorStarterpackDk.lib.model.ApplicationModule
 import cz.danielkouba.ktorStarterpackDk.modules.article.handlers.*
-import cz.danielkouba.ktorStarterpackDk.modules.article.model.ArticleCreateImportV1
 import cz.danielkouba.ktorStarterpackDk.modules.article.model.ArticleStatus
-import cz.danielkouba.ktorStarterpackDk.modules.article.model.ArticleUpdateImportV1
 import io.ktor.http.*
 import io.ktor.resources.*
 import io.ktor.server.application.*
-import io.ktor.server.plugins.requestvalidation.*
 import io.ktor.server.resources.*
-import io.ktor.server.routing.route
 import io.ktor.server.response.*
+import io.ktor.server.routing.route
 import kotlinx.serialization.Serializable
 import org.koin.core.component.*
 import org.koin.core.parameter.parametersOf
@@ -50,10 +47,6 @@ class ArticleModule : ApplicationModule() {
 
     override fun registerRouting() = routing {
         route("v1") {
-            install(RequestValidation) {
-                validate(ArticleCreateImportV1::class) { it.validate() }
-                validate(ArticleUpdateImportV1::class) { it.validate() }
-            }
             get<Articles> {
                 GetArticlesHandler(service, exporterV1, it).respondTo(call)
             }
@@ -66,7 +59,7 @@ class ArticleModule : ApplicationModule() {
             put<Articles.Article> {
                 UpdateArticleHandler(service, exporterV1, it).respondTo(call)
             }
-            post<Articles.Article.Rate>{
+            post<Articles.Article.Rate> {
                 RateArticleHandler(service, exporterV1, it).respondTo(call)
             }
             delete<Articles.Article> {

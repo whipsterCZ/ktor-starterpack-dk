@@ -49,7 +49,6 @@ dependencies {
     implementation("io.ktor:ktor-server-default-headers:$ktor_version")
     implementation("io.ktor:ktor-server-forwarded-header:$ktor_version")
     implementation("io.ktor:ktor-server-swagger:$ktor_version")
-    implementation("io.ktor:ktor-server-request-validation:$ktor_version")
 //    implementation("io.swagger.codegen.v3:swagger-codegen-generators:1.0.36")
     testImplementation("io.ktor:ktor-server-tests-jvm:$ktor_version")
     implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:$ktor_version")

@@ -70,7 +70,6 @@ open class ArticleMockRepository : ArticleRepository {
     }
 
 
-
     override suspend fun cleanUp() {
         // do nothing
     }
@@ -87,11 +86,12 @@ open class ArticleMockRepository : ArticleRepository {
                     id = it.toString(),
                     title = "Article $it",
                     text = "Article $it text",
-                    rating = 5.0f,
+                    rating = 4.0f,
                     rateCount = 1,
                     status = when (it % 3) {
                         0 -> ArticleStatus.DRAFT
                         1 -> ArticleStatus.PUBLISHED
+                        2 -> ArticleStatus.HIDDEN
                         else -> ArticleStatus.DELETED
                     }
                 )

@@ -1,6 +1,8 @@
 package cz.danielkouba.ktorStarterpackDk.configuration
 
 import ch.qos.logback.classic.Logger
+import cz.danielkouba.ktorStarterpackDk.lib.model.ValidationError
+import cz.danielkouba.ktorStarterpackDk.lib.model.ValidationException
 import cz.danielkouba.ktorStarterpackDk.modules.logger.LoggerService
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -23,8 +25,6 @@ fun Application.configureErrorHandling() {
     )
 
     install(StatusPages) {
-
-
         status(
             HttpStatusCode.BadRequest,
             HttpStatusCode.NotFound,
@@ -35,6 +35,9 @@ fun Application.configureErrorHandling() {
             errorHandler.respond(call, status, status.toString())
         }
 
+        exception<ValidationException> { call, cause ->
+            errorHandler.respondValidationErrors(call, HttpStatusCode.UnprocessableEntity, cause)
+        }
         exception<NotFoundException> { call, cause ->
             errorHandler.logAndRespond(call, HttpStatusCode.NotFound, cause)
         }
@@ -42,7 +45,7 @@ fun Application.configureErrorHandling() {
             errorHandler.logAndRespond(call, HttpStatusCode.InternalServerError, cause)
         }
         exception<RequestValidationException> { call, cause ->
-            errorHandler.logAndRespond(call, HttpStatusCode.UnprocessableEntity, cause.reasons.joinToString())
+            errorHandler.logAndRespond(call, HttpStatusCode.BadRequest, cause.reasons.joinToString())
         }
         exception<BadRequestException> { call, cause ->
             errorHandler.logAndRespond(call, HttpStatusCode.BadRequest, cause)
@@ -54,7 +57,11 @@ fun Application.configureErrorHandling() {
 }
 
 @Serializable
-data class ErrorResponse(val status: Int, val errorMessage: String? = null)
+data class ErrorResponse(
+    val status: Int,
+    val errorMessage: String? = null,
+    val validationErrors: List<ValidationError>? = null
+)
 
 class ErrorHandler(val logger: Logger, val acceptTypeSensitive: Boolean, val stackTrace: Boolean = true) {
 
@@ -98,6 +105,24 @@ class ErrorHandler(val logger: Logger, val acceptTypeSensitive: Boolean, val sta
         } else {
             call.respondText(
                 text = "$status: $message",
+                status = status,
+            )
+        }
+    }
+
+    suspend fun respondValidationErrors(
+        call: ApplicationCall,
+        status: HttpStatusCode,
+        exception: ValidationException
+    ) {
+        if (acceptJson(call)) {
+            call.respond(
+                status = status,
+                message = ErrorResponse(status.value, "ValidationError", exception.errors)
+            )
+        } else {
+            call.respondText(
+                text = "$status: ValidationError: ${exception.errors.joinToString()}",
                 status = status,
             )
         }

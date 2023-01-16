@@ -1,16 +1,15 @@
 package cz.danielkouba.ktorStarterpackDk.configuration
 
-import io.ktor.http.*
-import io.ktor.serialization.kotlinx.json.*
-import io.ktor.server.plugins.defaultheaders.DefaultHeaders
 //import io.ktor.server.configuration.forwardedheaders.ForwardedHeaders
 //import io.ktor.server.configuration.forwardedheaders.XForwardedHeaders
-import io.ktor.server.plugins.autohead.AutoHeadResponse
+import io.ktor.http.*
+import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
+import io.ktor.server.plugins.autohead.*
 import io.ktor.server.plugins.compression.*
 import io.ktor.server.plugins.contentnegotiation.*
-import io.ktor.server.plugins.cors.routing.CORS
-import io.ktor.server.plugins.requestvalidation.*
+import io.ktor.server.plugins.cors.routing.*
+import io.ktor.server.plugins.defaultheaders.*
 import kotlinx.serialization.json.Json
 
 fun Application.configureHTTP() {
@@ -54,6 +53,4 @@ fun Application.configureHTTP() {
             }
         )
     }
-
-    install(RequestValidation) { }
 }

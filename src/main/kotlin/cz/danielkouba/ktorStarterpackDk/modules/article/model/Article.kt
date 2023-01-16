@@ -1,11 +1,11 @@
 package cz.danielkouba.ktorStarterpackDk.modules.article.model
 
 import cz.danielkouba.ktorStarterpackDk.lib.interfaces.ApplicationModel
-import cz.danielkouba.ktorStarterpackDk.modules.article.validators.ArticleCollectionValidator
+import cz.danielkouba.ktorStarterpackDk.lib.model.ValidationError
+import cz.danielkouba.ktorStarterpackDk.lib.model.Validator
 import cz.danielkouba.ktorStarterpackDk.modules.article.validators.ArticleCreateValidator
 import cz.danielkouba.ktorStarterpackDk.modules.article.validators.ArticleUpdateValidator
 import cz.danielkouba.ktorStarterpackDk.modules.article.validators.ArticleValidator
-import io.ktor.server.plugins.requestvalidation.*
 import java.time.ZonedDateTime
 
 interface ArticleInterface {
@@ -40,21 +40,35 @@ data class Article(
 ) : ApplicationModel, ArticleWithIdInterface {
 
     init {
-        validateAndThrow()
+        validate()
     }
 
-    override fun validate(): ValidationResult = ArticleValidator(this).validate()
+    override fun validationErrors() = ArticleValidator(this).validationErrors()
 }
 
+/**
+ * Article collection model
+ *
+ * This is example of using
+ */
 data class ArticleCollection(
     val items: List<Article>,
     val hits: Int
-) : ApplicationModel {
+) : Validator(), ApplicationModel {
     init {
-        validateAndThrow()
+        validate()
     }
 
-    override fun validate() = ArticleCollectionValidator(this).validate()
+    // override fun validationErrors() = ArticleCollectionValidator(this).validationErrors()
+
+    // this is example of using Validator class directly (inheritance)
+    override fun validationErrors(): List<ValidationError> {
+        // collection items are validated by its own validator [ArticleValidator]
+        check(hits >= 0) {
+            ValidationError.Bounds("hits", "ArticleCollection hits must not be negative")
+        }
+        return errors
+    }
 }
 
 data class ArticleCreate(
@@ -66,10 +80,10 @@ data class ArticleCreate(
     override val rateCount: Int = 0,
 ) : ApplicationModel, ArticleInterface {
     init {
-        validateAndThrow()
+        validate()
     }
 
-    override fun validate(): ValidationResult = ArticleCreateValidator(this).validate()
+    override fun validationErrors() = ArticleCreateValidator(this).validationErrors()
 }
 
 
@@ -83,8 +97,8 @@ data class ArticleUpdate(
 ) : ApplicationModel, ArticleInterface {
 
     init {
-        validateAndThrow()
+        validate()
     }
 
-    override fun validate(): ValidationResult = ArticleUpdateValidator(this).validate()
+    override fun validationErrors() = ArticleUpdateValidator(this).validationErrors()
 }

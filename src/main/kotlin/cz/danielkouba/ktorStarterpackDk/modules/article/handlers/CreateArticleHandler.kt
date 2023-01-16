@@ -1,23 +1,24 @@
 package cz.danielkouba.ktorStarterpackDk.modules.article.handlers
 
+import cz.danielkouba.ktorStarterpackDk.lib.model.RouteHandler
+import cz.danielkouba.ktorStarterpackDk.lib.model.RouteResult
 import cz.danielkouba.ktorStarterpackDk.modules.article.ArticleExportService
 import cz.danielkouba.ktorStarterpackDk.modules.article.ArticleService
 import cz.danielkouba.ktorStarterpackDk.modules.article.model.Article
 import cz.danielkouba.ktorStarterpackDk.modules.article.model.ArticleCreateImportV1
 import io.ktor.http.*
 import io.ktor.server.application.*
-import io.ktor.server.request.*
 
 class CreateArticleHandler(
-    service: ArticleService,
+    private val service: ArticleService,
     exporter: ArticleExportService
-) : BaseArticleHandler<Article>(service, exporter) {
+) : RouteHandler<Article>(exporter) {
 
-    override suspend fun handle(call: ApplicationCall): ArticleRouteResult<Article> {
+    override suspend fun handle(call: ApplicationCall): RouteResult<Article> {
         val context = reqContext(call)
 
-        // it is validated by the request validation plugin
-        val articleImported = call.receive<ArticleCreateImportV1>()
+        // get the validated ImportModel form request body
+        val articleImported = importModel<ArticleCreateImportV1>(call)
 
         // create internal application model
         val articleToBeCreated = articleImported.toModel()
@@ -26,6 +27,6 @@ class CreateArticleHandler(
         val articleModel = service.createArticle(articleToBeCreated, context)
 
         // return request result
-        return ArticleRouteResult.WithModel(articleModel, HttpStatusCode.Created)
+        return RouteResult.WithModel(articleModel, HttpStatusCode.Created)
     }
 }

@@ -2,7 +2,7 @@ package cz.danielkouba.ktorStarterpackDk.configuration
 
 import cz.danielkouba.ktorStarterpackDk.modules.app.config.ConfigFactoryFromEnv
 import cz.danielkouba.ktorStarterpackDk.modules.app.config.ConfigModel
-import io.ktor.server.application.Application
+import io.ktor.server.application.*
 
 /**
  * This is the main configuration.
