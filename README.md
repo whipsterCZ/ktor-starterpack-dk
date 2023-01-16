@@ -83,6 +83,7 @@ see `.env.sample` file
 - [x] [Ktor](https://ktor.io/) framework
 - [x] Configuration using .env file
 - [x] Dependency Injection [Koin](https://insert-koin.io/)
+  - [ ] should we use Eager initialization? 
 - [x] App structure (Modules)
 - [x] Logging  [configure runtime](https://stackoverflow.com/questions/16910955/programmatically-configure-logback-appender)
   - [x] LoggerService
@@ -126,7 +127,9 @@ see `.env.sample` file
   - [x] swagger-ui `/swagger`
 
 ## Known issues
-- [ ] Auto-reload feature - which broke singletons! [KTOR-4842](https://youtrack.jetbrains.com/issue/KTOR-4842/Autoreloading-It-breaks-lateinit-variables-initialization)
+- [x] Auto-reload feature - which broke singletons! [KTOR-4842](https://youtrack.jetbrains.com/issue/KTOR-4842/Autoreloading-It-breaks-lateinit-variables-initialization)
+  - if singleton is created inside Application module, it will be created only once (on first request) and KtorAutoLoader should don't release instance
+  - in development mode, it is not problem i guess... (only Singleton which is created outside of module is Config...)
 - [ ] Logger shared context - Not working properly (context should be owned by every child)
 - [ ] CallLogging sets custom logger (app.router) - but it is used by KTOR system logging...  
 - [ ] Serializer for LogLevel doesn't work @see `/lib/serializers/LogLevelSerializer.kt`"
