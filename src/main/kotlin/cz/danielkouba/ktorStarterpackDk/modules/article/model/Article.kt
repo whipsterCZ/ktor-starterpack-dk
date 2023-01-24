@@ -38,7 +38,6 @@ data class Article(
     override val rateCount: Int = 0,
     override val status: ArticleStatus = ArticleStatus.DRAFT
 ) : ApplicationModel, ArticleWithIdInterface {
-
     init {
         validate()
     }
@@ -95,7 +94,6 @@ data class ArticleUpdate(
     override val rating: Float? = null,
     override val rateCount: Int = 0,
 ) : ApplicationModel, ArticleInterface {
-
     init {
         validate()
     }
