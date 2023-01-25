@@ -29,9 +29,7 @@ check:
 compile:
   stage: compile
   script: gradle buildFatJar
-  dependencies:
-    - build
-    - .gradle
+  dependencies: [ check ]
   artifacts:
     paths:
       - build/libs
@@ -40,6 +38,7 @@ compile:
 build:
   stage: build
   image: registry.mallgroup.com/x/docker-hub/docker:17.12
+  dependencies: [ compile ]
   script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
     - docker pull "$DOCKER_CACHE_IMAGE" || docker pull "${DOCKER_REPO}:main" || true # allow failure
