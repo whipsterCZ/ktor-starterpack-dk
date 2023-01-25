@@ -18,7 +18,7 @@ before_script:
 
 check:
   stage: check
-  script: gradle clean check
+  script: gradle check
   cache:
     key: "$DOCKER_TAG"
     policy: pull-push
@@ -28,7 +28,7 @@ check:
 
 compile:
   stage: compile
-  script: gradle buildFatJar --build-cache
+  script: gradle buildFatJar
   cache:
     key: "$CI_COMMIT_REF_NAME"
     policy: push
@@ -40,6 +40,9 @@ compile:
 build:
   stage: build
   image: registry.mallgroup.com/x/docker-hub/docker:17.12
+  artifacts:
+    paths:
+      - build/libs/*.jar
   dependencies:
     - compile
   script:
