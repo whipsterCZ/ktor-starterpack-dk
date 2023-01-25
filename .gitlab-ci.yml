@@ -16,35 +16,30 @@ before_script:
     export DOCKER_CACHE_IMAGE="${DOCKER_REPO}:${CI_COMMIT_REF_NAME}"
     export GRADLE_USER_HOME="$(pwd)/.gradle"
 
+# Check LINT and TEST code
 check:
   stage: check
   script: gradle check
-  cache:
-    key: "$DOCKER_TAG"
-    policy: pull-push
+  artifacts:
     paths:
       - build
       - .gradle
 
+# Creates executable jar
 compile:
   stage: compile
   script: gradle buildFatJar
-  cache:
-    key: "$CI_COMMIT_REF_NAME"
-    policy: push
+  dependencies:
+    - build
+    - .gradle
+  artifacts:
     paths:
-      - build
-      - .gradle
+      - build/libs
 
-
+# Build docker image
 build:
   stage: build
   image: registry.mallgroup.com/x/docker-hub/docker:17.12
-  artifacts:
-    paths:
-      - build/libs/*.jar
-  dependencies:
-    - compile
   script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
     - docker pull "$DOCKER_CACHE_IMAGE" || docker pull "${DOCKER_REPO}:main" || true # allow failure
