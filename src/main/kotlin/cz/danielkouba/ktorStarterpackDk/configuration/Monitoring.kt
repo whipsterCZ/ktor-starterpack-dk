@@ -28,7 +28,7 @@ fun Application.configureMonitoring() {
         registry = appMicrometerRegistry
         metricName = this@configureMonitoring.config().metricsPrefix
 
-        timers { call, throwable ->
+        timers { call, _ ->
             val path = call.request.path()
             val version = parseVersion(path)
             tag("version", version)

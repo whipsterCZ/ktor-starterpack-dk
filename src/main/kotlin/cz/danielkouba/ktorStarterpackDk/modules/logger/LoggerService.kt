@@ -20,7 +20,7 @@ class LoggerService(
     private val logAppender: Appender,
     private val appName: String,
     private val appVersion: String,
-    private val logbackConfigFile: String = "${System.getProperty("user.dir")}/src/main/resources/logback.xml"
+    private val logbackConfigFile: String = "logback.xml"
 ) {
 
     init {
@@ -33,20 +33,22 @@ class LoggerService(
     fun configureLoggerContext() {
         val loggerContext: LoggerContext = LoggerFactory.getILoggerFactory() as LoggerContext
 
-        try {
-            JoranConfigurator().apply {
-                context = loggerContext
-                loggerContext.reset()
-                loggerContext.putProperty("appenderName", logAppender.toString())
-                loggerContext.putProperty("environment", environment.name.lowercase())
-                loggerContext.putProperty("appName", appName)
-                loggerContext.putProperty("appVersion", appVersion)
-                doConfigure(logbackConfigFile)
+        javaClass.classLoader.getResource(logbackConfigFile)?.let { configUrl ->
+            try {
+                JoranConfigurator().apply {
+                    context = loggerContext
+                    loggerContext.reset()
+                    loggerContext.putProperty("appenderName", logAppender.toString())
+                    loggerContext.putProperty("environment", environment.name.lowercase())
+                    loggerContext.putProperty("appName", appName)
+                    loggerContext.putProperty("appVersion", appVersion)
+                    doConfigure(configUrl)
+                }
+            } catch (je: JoranException) {
+                // StatusPrinter will handle this
             }
-        } catch (je: JoranException) {
-            // StatusPrinter will handle this
+            StatusPrinter.printInCaseOfErrorsOrWarnings(loggerContext)
         }
-        StatusPrinter.printInCaseOfErrorsOrWarnings(loggerContext)
     }
 
     /**

@@ -1,1 +1,8 @@
 .env
+.DS_Store
+/.idea/
+/.git/
+/Dockerfile
+/docker-compose*
+/README.*
+/.gradle/
