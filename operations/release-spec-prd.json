@@ -1,5 +1,5 @@
 {
-  "$schema": "https://gitlab.mallgroup.com/di/helm-deployment-toolkit/-/raw/master/private/helm/charts/generic/release_spec_schema.json",
+  "$schema": "https://gitlab.mallgroup.com/di/helm-deployment-toolkit/-/raw/master/private/helm/charts/mg-generic-lib/release_spec_schema.json",
   "team": "gb",
   "environment": "prod",
   "cluster": "prd",
@@ -21,6 +21,21 @@
       "SHUTDOWN_HOOKS_ASYNC": "SHUTDOWN_HOOKS_ASYNC",
       "ARTICLE_API_URL": "ARTICLE_API_URL"
     }
+  },
+  "readinessProbe": {
+    "path": "/health"
+  },
+  "livenessProbe": {
+    "httpGet": {
+      "path": "/health",
+      "port": 80,
+      "scheme": "HTTP"
+    },
+    "successThreshold": 1,
+    "failureThreshold": 4,
+    "initialDelaySeconds": 30,
+    "periodSeconds": 10,
+    "timeoutSeconds": 3
   },
   "prometheusPort": 80,
   "prometheusScrape": "true",
