@@ -19,9 +19,7 @@ class AppModule : ApplicationModule() {
         }
     }
 
-
     override suspend fun onShutdown() {
         // nothing to do
     }
-
 }

@@ -2,7 +2,6 @@ package cz.danielkouba.ktorStarterpackDk.lib.model
 
 import cz.danielkouba.ktorStarterpackDk.lib.interfaces.ValidatedModel
 
-
 /**
  * Blueprint for all validators. It provides helpers methods for validation.
  *
@@ -70,6 +69,4 @@ abstract class Validator : ValidatedModel {
             return create(rules).validationErrors()
         }
     }
-
 }
-

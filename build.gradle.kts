@@ -10,6 +10,7 @@ plugins {
     id("io.ktor.plugin") version "2.2.2"
     id("org.jetbrains.kotlin.plugin.serialization") version "1.8.0"
     id("co.uzzu.dotenv.gradle") version "2.0.0"
+    id("org.jlleitschuh.gradle.ktlint") version "11.0.0"
 }
 
 group = "cz.danielkouba.ktor-starterpack-dk"
@@ -27,11 +28,11 @@ application {
         println("WARNING auto-reloading is enabled - Singletons may will not be working! @see README.md")
         applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
     }
-
 }
 
 repositories {
     mavenCentral()
+    maven("https://artifactory.mallgroup.com/artifactory/libs-release")
 }
 
 dependencies {
@@ -61,12 +62,10 @@ dependencies {
     implementation("io.micrometer:micrometer-registry-prometheus:$prometheus_version")
 
     // Logging
-//    implementation("ch.qos.logback:logback-core:$logback_version")
     implementation("ch.qos.logback:logback-classic:$logback_version")
     implementation("org.slf4j:slf4j-api:2.0.4")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
     implementation("net.logstash.logback:logstash-logback-encoder:7.2")
-
 
     // DI
     implementation("io.insert-koin:koin-core:$koin_version")
@@ -80,10 +79,25 @@ dependencies {
     runtimeOnly("io.netty:netty-resolver-dns-native-macos:4.1.77.Final:osx-aarch_64")
 }
 
+ktlint {
+    verbose.set(true)
+    outputToConsole.set(true)
+    coloredOutput.set(true)
+    reporters {
+        reporter(org.jlleitschuh.gradle.ktlint.reporter.ReporterType.CHECKSTYLE)
+        reporter(org.jlleitschuh.gradle.ktlint.reporter.ReporterType.JSON)
+        reporter(org.jlleitschuh.gradle.ktlint.reporter.ReporterType.HTML)
+    }
+    filter {
+        exclude("**/style-violations.kt")
+        exclude("**/generated/**")
+    }
+    disabledRules.set(setOf("no-wildcard-imports", "no-unused-imports"))
+}
+
 /*    ____     __  __        __  __     ______   ______     ______
     /\  __-.  /\ \/ /       /\ \/ /    /\__  _\ /\  __ \   /\  == \
     \ \ \/\ \ \ \  _"-.     \ \  _"-.  \/_/\ \/ \ \ \/\ \  \ \  __<
      \ \____-  \ \_\ \_\     \ \_\ \_\    \ \_\  \ \_____\  \ \_\ \_\
       \/____/   \/_/\/_/      \/_/\/_/     \/_/   \/_____/   \/_/ /_/
        GINGER    BEAVERS       STARTER-PACK FOR KOTLIN KTOR SERVERS */
-

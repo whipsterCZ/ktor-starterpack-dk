@@ -19,7 +19,6 @@ class RateArticleHandler(
     override suspend fun handle(call: ApplicationCall): RouteResult<Article> {
         val context = reqContext(call)
 
-
         /**
          * Validate input params
          */

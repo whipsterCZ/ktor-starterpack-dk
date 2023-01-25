@@ -48,11 +48,9 @@ fun Application.configureMonitoring() {
             )
             .build()
 
-
         availableGauge.register(registry)
         upGauge.register(registry)
     }
-
 
     routing {
         get("/health") {

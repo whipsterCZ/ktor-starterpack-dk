@@ -67,8 +67,6 @@ fun Application.attachApplicationModules() {
         }
         log.info("ApplicationModules.onShutdown ended in ${time}ms")
     }
-
 }
 
 fun Application.enableResourceRouting() = pluginOrNull(Resources) ?: install(Resources)
-

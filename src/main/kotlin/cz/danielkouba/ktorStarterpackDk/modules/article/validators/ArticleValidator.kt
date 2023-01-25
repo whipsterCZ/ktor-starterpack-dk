@@ -60,14 +60,12 @@ class ArticleCreateValidator(model: ArticleCreate) : ArticleBaseValidator<Articl
     }
 }
 
-
 class ArticleUpdateValidator(model: ArticleUpdate) : ArticleBaseValidator<ArticleUpdate>(model) {
     override fun validationErrors(): List<ValidationError> {
         commonValidations()
         return errors
     }
 }
-
 
 class ArticleCollectionValidator(val model: ArticleCollection) : Validator() {
     override fun validationErrors(): List<ValidationError> {

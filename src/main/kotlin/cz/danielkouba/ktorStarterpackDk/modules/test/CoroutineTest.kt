@@ -26,7 +26,6 @@ fun main() {
     log("main ended - took ${millis()}")
 }
 
-
 fun syncOperations() {
     runBlocking {
         operation("A")

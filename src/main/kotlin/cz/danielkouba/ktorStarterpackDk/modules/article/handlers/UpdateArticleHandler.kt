@@ -33,5 +33,4 @@ class UpdateArticleHandler(
 
         return RouteResult.WithModel(updatedArticle)
     }
-
 }

@@ -1,0 +1,39 @@
+{
+  "$schema": "https://gitlab.mallgroup.com/di/helm-deployment-toolkit/-/raw/master/private/helm/charts/generic/release_spec_schema.json",
+  "team": "gb",
+  "environment": "test",
+  "cluster": "tst",
+  "component": "dk",
+  "service": "mal-ktor",
+  "imageRepository": "registry.mallgroup.com/gb/ktor-starterpack-dk",
+  "replicaCount": 2,
+  "envs": {
+    "TZ": "Europe/Prague",
+    "PORT": "80",
+    "LOGGER_APPENDER": "json"
+  },
+  "vaultSecrets": {
+    "env-other/gb/test/mal-ktor-dk/env": {
+      "ENVIRONMENT": "ENVIRONMENT",
+      "LOG_LEVEL": "LOG_LEVEL",
+      "SHUTDOWN_GRACEFUL_PERIOD": "SHUTDOWN_GRACEFUL_PERIOD",
+      "SHUTDOWN_TIMEOUT": "SHUTDOWN_TIMEOUT",
+      "SHUTDOWN_HOOKS_ASYNC": "SHUTDOWN_HOOKS_ASYNC",
+      "ARTICLE_API_URL": "ARTICLE_API_URL"
+    }
+  },
+  "prometheusPort": 80,
+  "prometheusScrape": "true",
+  "ports": [
+    {
+      "port": 80
+    }
+  ],
+  "consulTags": [
+    "http"
+  ],
+  "consulServiceName": "mal-ktor-dk",
+  "cpuRequest": "10m",
+  "cpuLimit": "100m",
+  "memory": "100Mi"
+}

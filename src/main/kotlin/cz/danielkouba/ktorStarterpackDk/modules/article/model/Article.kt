@@ -85,7 +85,6 @@ data class ArticleCreate(
     override fun validationErrors() = ArticleCreateValidator(this).validationErrors()
 }
 
-
 data class ArticleUpdate(
     override val title: String,
     override val text: String,

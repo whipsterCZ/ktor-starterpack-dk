@@ -20,7 +20,6 @@ fun Application.configureShutdown() {
     }
 }
 
-
 /**
  * Shortcut for registering shutdown hooks
  *   - every module should handle it's cleanup by itself
@@ -32,7 +31,6 @@ fun Application.configureShutdown() {
  */
 fun Application.onShutdown(handler: EventHandler<KoinApplication>) =
     environment.monitor.subscribe(KoinApplicationStopPreparing, handler)
-
 
 /**
  * Has to be called from main() function to ensure graceful shutdown working properly
@@ -47,4 +45,3 @@ fun gracefulShutdown(server: ApplicationEngine) {
         TimeUnit.MILLISECONDS
     )
 }
-

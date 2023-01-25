@@ -17,7 +17,7 @@ import io.ktor.server.application.*
  * It doesn't inherit from [RouteHandler] because it doesn't return any data
  */
 class DeleteArticleHandler(
-    private  val service: ArticleService,
+    private val service: ArticleService,
     exporter: ArticleExportService,
     private val article: Articles.Article
 ) : RouteHandler<Article>(exporter) {
@@ -30,5 +30,4 @@ class DeleteArticleHandler(
 
         return RouteResult.OnlyStatus(HttpStatusCode.NoContent)
     }
-
 }

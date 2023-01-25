@@ -9,7 +9,6 @@ import ch.qos.logback.core.util.StatusPrinter
 import cz.danielkouba.ktorStarterpackDk.modules.app.config.ConfigEnvironment
 import org.slf4j.LoggerFactory
 
-
 /**
  * Provides logger service and factory for creating loggers.
  */
@@ -94,7 +93,7 @@ class LoggerService(
  * @param configure optional configuration of the logger
  */
 fun Logger.child(scope: String, configure: ConfigureLogger? = null): Logger {
-    val loggerName = "${name}.${scope}"
+    val loggerName = "$name.$scope"
     val logger = loggerContext.getLogger(loggerName) as Logger
     logger.loggerContext.putProperty("scope", scope)
     configure?.invoke(logger)

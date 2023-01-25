@@ -1,0 +1,20 @@
+include:
+  - remote: "https://gitlab.mallgroup.com/di/helm-deployment-toolkit/raw/0.7.0/ci/helm-commons.yml"
+
+deploy_helm_test:
+  stage: deploy_test
+  when: manual
+  extends: [ ".helm:private-chart-deployer:base-job" ]
+  variables:
+    HELM_VALUES_FILE: operations/release-spec-tst.json
+    DEPLOY_TAG: "${CI_COMMIT_SHORT_SHA}"
+
+deploy_helm_prod:
+  stage: deploy_prod
+  when: manual
+  extends: [ ".helm:private-chart-deployer:base-job" ]
+  only:
+    - master
+  variables:
+    HELM_VALUES_FILE: operations/release-spec-prd.json
+    DEPLOY_TAG: "${CI_COMMIT_SHORT_SHA}"

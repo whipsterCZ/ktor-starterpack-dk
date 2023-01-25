@@ -13,7 +13,6 @@ import kotlinx.serialization.Serializable
 import org.koin.core.component.*
 import org.koin.core.parameter.parametersOf
 
-
 /**
  * Article Resource (allows to type-safe routing)
  *
@@ -31,7 +30,6 @@ data class Articles(val status: ArticleStatus? = null) {
         @Resource("rate")
         data class Rate(val parent: Article, val rating: Float)
     }
-
 }
 
 class ArticleModule : ApplicationModule() {
@@ -67,7 +65,6 @@ class ArticleModule : ApplicationModule() {
             }
         }
     }
-
 
     /**
      * On shutdown release resources, close connections, close websockets etc.

@@ -65,7 +65,7 @@ abstract class ApplicationModule : KoinComponent {
     /**
      * Optional hook is called when all modules are initialized.
      */
-    fun onStart(): Unit {}
+    fun onStart() {}
 
     fun enableResourceRouting() = application.enableResourceRouting()
 }

@@ -28,7 +28,6 @@ open class ArticleMockRepository : ArticleRepository {
         return articles.find { it.id == id } ?: articleNotFound(id)
     }
 
-
     override suspend fun createArticle(create: ArticleCreate): Article {
         val randomString = (0..10).map { ('a'..'z').random() }.joinToString("")
 
@@ -68,7 +67,6 @@ open class ArticleMockRepository : ArticleRepository {
     override suspend fun deleteArticle(id: String) {
         if (!articles.removeIf { it.id == id }) articleNotFound(id)
     }
-
 
     override suspend fun cleanUp() {
         // do nothing

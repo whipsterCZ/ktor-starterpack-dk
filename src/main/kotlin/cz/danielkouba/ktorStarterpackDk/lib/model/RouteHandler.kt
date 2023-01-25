@@ -66,7 +66,6 @@ abstract class RouteHandler<T : ApplicationModel>(
     suspend inline fun <reified T : ImportModel> importModel(call: ApplicationCall): T {
         val importModel = try {
             call.receive<T>()
-
         } catch (e: Throwable) {
             // Check missing fields
             e.findCause<MissingFieldException>()?.let {
@@ -82,7 +81,6 @@ abstract class RouteHandler<T : ApplicationModel>(
         return importModel
     }
 }
-
 
 inline fun <reified T : Any> Throwable.findCause(): T? {
     var cause = this.cause
