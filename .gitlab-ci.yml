@@ -1,5 +1,6 @@
 stages:
   - check
+  - compile
   - build
   - deploy_test
   - deploy_prod
@@ -20,13 +21,13 @@ check:
   script: gradle clean check
   cache:
     key: "$DOCKER_TAG"
-    policy: pull
+    policy: pull-push
     paths:
       - build
       - .gradle
 
 compile:
-  stage: build
+  stage: compile
   script: gradle buildFatJar --build-cache --no-daemon
   cache:
     key: "$CI_COMMIT_REF_NAME"

@@ -28,6 +28,7 @@ fun Application.bootstrap() {
     configureReqContext() // access request context to routing
     attachApplicationModules() // register app modules (routing, services, business logic, etc.
 
+    
     /**
      * Additional Application functionality (plugins and features)
      */
