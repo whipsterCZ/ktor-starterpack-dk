@@ -28,7 +28,7 @@ check:
 
 compile:
   stage: compile
-  script: gradle buildFatJar --build-cache --no-daemon
+  script: gradle buildFatJar --build-cache
   cache:
     key: "$CI_COMMIT_REF_NAME"
     policy: push
