@@ -14,7 +14,7 @@ deploy_helm_prod:
   when: manual
   extends: [ ".helm:private-chart-deployer:base-job" ]
   only:
-    - master
+    - main
   variables:
     HELM_VALUES_FILE: operations/release-spec-prd.json
     DEPLOY_TAG: "${CI_COMMIT_SHORT_SHA}"
