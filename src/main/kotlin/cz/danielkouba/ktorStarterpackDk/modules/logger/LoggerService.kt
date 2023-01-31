@@ -9,7 +9,6 @@ import ch.qos.logback.core.util.StatusPrinter
 import cz.danielkouba.ktorStarterpackDk.modules.app.config.ConfigEnvironment
 import org.slf4j.LoggerFactory
 
-
 /**
  * Provides logger service and factory for creating loggers.
  */
@@ -20,7 +19,7 @@ class LoggerService(
     private val logAppender: Appender,
     private val appName: String,
     private val appVersion: String,
-    private val logbackConfigFile: String = "${System.getProperty("user.dir")}/src/main/resources/logback.xml"
+    private val logbackConfigFile: String = "logback.xml"
 ) {
 
     init {
@@ -33,20 +32,22 @@ class LoggerService(
     fun configureLoggerContext() {
         val loggerContext: LoggerContext = LoggerFactory.getILoggerFactory() as LoggerContext
 
-        try {
-            JoranConfigurator().apply {
-                context = loggerContext
-                loggerContext.reset()
-                loggerContext.putProperty("appenderName", logAppender.toString())
-                loggerContext.putProperty("environment", environment.name.lowercase())
-                loggerContext.putProperty("appName", appName)
-                loggerContext.putProperty("appVersion", appVersion)
-                doConfigure(logbackConfigFile)
+        javaClass.classLoader.getResource(logbackConfigFile)?.let { configUrl ->
+            try {
+                JoranConfigurator().apply {
+                    context = loggerContext
+                    loggerContext.reset()
+                    loggerContext.putProperty("appenderName", logAppender.toString())
+                    loggerContext.putProperty("environment", environment.name.lowercase())
+                    loggerContext.putProperty("appName", appName)
+                    loggerContext.putProperty("appVersion", appVersion)
+                    doConfigure(configUrl)
+                }
+            } catch (je: JoranException) {
+                // StatusPrinter will handle this
             }
-        } catch (je: JoranException) {
-            // StatusPrinter will handle this
+            StatusPrinter.printInCaseOfErrorsOrWarnings(loggerContext)
         }
-        StatusPrinter.printInCaseOfErrorsOrWarnings(loggerContext)
     }
 
     /**
@@ -92,7 +93,7 @@ class LoggerService(
  * @param configure optional configuration of the logger
  */
 fun Logger.child(scope: String, configure: ConfigureLogger? = null): Logger {
-    val loggerName = "${name}.${scope}"
+    val loggerName = "$name.$scope"
     val logger = loggerContext.getLogger(loggerName) as Logger
     logger.loggerContext.putProperty("scope", scope)
     configure?.invoke(logger)

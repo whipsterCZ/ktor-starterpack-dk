@@ -46,7 +46,6 @@ data class ArticleCreateImportV1(
             tryCheck("status") { ArticleStatus.from(status) }
         }
     }
-
 }
 
 /**

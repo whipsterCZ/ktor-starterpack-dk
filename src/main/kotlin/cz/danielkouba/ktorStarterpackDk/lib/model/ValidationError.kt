@@ -35,5 +35,4 @@ open class ValidationError protected constructor(
     override fun toString(): String {
         return "$field:$code($message)"
     }
-
 }

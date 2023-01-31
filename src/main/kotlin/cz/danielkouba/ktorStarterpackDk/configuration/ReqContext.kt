@@ -9,7 +9,6 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
 
-
 /**
  * provide access to Request Context in routing (call.reqContext)
  * It can't be extension of Route or Routing because it can't be called when router is initialized
@@ -78,7 +77,7 @@ class ReqContext(
     val logger: Logger
         get() {
             val logger = lazyLogger
-            //println("  GET Logger | ${this} | logger: ${logger.name} | loggerContext ${logger.loggerContext}")
+            // println("  GET Logger | ${this} | logger: ${logger.name} | loggerContext ${logger.loggerContext}")
             meta.forEach { (key, value) -> logger.loggerContext.putProperty(key, value) }
             return logger
         }
@@ -119,7 +118,6 @@ class ReqContext(
         meta["shopId"] = shopId
         return this
     }
-
 }
 
 typealias ReqCallContextMeta = MutableMap<String, String>

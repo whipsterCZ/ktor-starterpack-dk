@@ -28,7 +28,7 @@ fun Application.configureMonitoring() {
         registry = appMicrometerRegistry
         metricName = this@configureMonitoring.config().metricsPrefix
 
-        timers { call, throwable ->
+        timers { call, _ ->
             val path = call.request.path()
             val version = parseVersion(path)
             tag("version", version)
@@ -48,11 +48,9 @@ fun Application.configureMonitoring() {
             )
             .build()
 
-
         availableGauge.register(registry)
         upGauge.register(registry)
     }
-
 
     routing {
         get("/health") {

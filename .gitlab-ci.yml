@@ -1,0 +1,55 @@
+stages:
+  - check
+  - compile
+  - build
+  - deploy_test
+  - deploy_prod
+
+image: artifactory.mallgroup.com/docker/gradle:7-jdk11
+
+before_script:
+  - |
+    # docker variables
+    export DOCKER_TAG="${CI_COMMIT_SHA:0:8}"
+    export DOCKER_REPO="$CI_REGISTRY_IMAGE"
+    export DOCKER_IMAGE="${DOCKER_REPO}:${DOCKER_TAG}"
+    export DOCKER_CACHE_IMAGE="${DOCKER_REPO}:${CI_COMMIT_REF_NAME}"
+    export GRADLE_USER_HOME="$(pwd)/.gradle"
+
+# Check LINT and TEST code
+check:
+  stage: check
+  script: gradle check
+  artifacts:
+    paths:
+      - build
+      - .gradle
+
+# Creates executable jar
+compile:
+  stage: compile
+  script: gradle buildFatJar
+  dependencies: [ check ]
+  artifacts:
+    paths:
+      - build/libs
+
+# Build docker image
+build:
+  stage: build
+  image: registry.mallgroup.com/x/docker-hub/docker:17.12
+  dependencies: [ compile ]
+  script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+    - docker pull "$DOCKER_CACHE_IMAGE" || docker pull "${DOCKER_REPO}:main" || true # allow failure
+    - docker pull "$DOCKER_IMAGE" || true # allow failure
+    - docker build --pull --cache-from "$DOCKER_IMAGE" --cache-from "$DOCKER_CACHE_IMAGE" --cache-from "${DOCKER_REPO}:main" --tag "$DOCKER_IMAGE" .
+    - docker push "$DOCKER_IMAGE"
+    - docker tag "$DOCKER_IMAGE" "$DOCKER_CACHE_IMAGE"
+    - docker push "$DOCKER_CACHE_IMAGE" || true # allow failure
+  tags:
+    - dind
+
+include:
+  - local: operations/.helm-deploy.yml
+

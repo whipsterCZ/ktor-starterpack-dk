@@ -8,7 +8,7 @@ import cz.danielkouba.ktorStarterpackDk.modules.article.model.ArticleCollection
 import cz.danielkouba.ktorStarterpackDk.modules.article.model.ArticleCollectionExportV1
 import cz.danielkouba.ktorStarterpackDk.modules.article.model.ArticleExportV1
 
-class ArticleExportService(val version: String = "v1"): ModelExporter {
+class ArticleExportService(val version: String = "v1") : ModelExporter {
 
     override suspend fun <T : ApplicationModel> export(model: T): ExportModel {
         return when (version) {
@@ -17,7 +17,7 @@ class ArticleExportService(val version: String = "v1"): ModelExporter {
         }
     }
 
-    //@Suppress("UNCHECKED_CAST")
+    // @Suppress("UNCHECKED_CAST")
     suspend fun <T : ApplicationModel> exportV1(model: T): ExportModel {
         return when (model) {
             is Article -> ArticleExportV1(model)

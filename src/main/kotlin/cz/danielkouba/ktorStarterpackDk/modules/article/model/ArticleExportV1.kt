@@ -48,7 +48,6 @@ data class ArticleExportV1(
      * Example of implementing validation by inheriting directly from Validator class
      */
     override fun validationErrors() = ArticleExportValidatorV1(this).validationErrors()
-
 }
 
 @Serializable()

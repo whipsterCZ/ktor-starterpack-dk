@@ -4,7 +4,7 @@ import cz.danielkouba.ktorStarterpackDk.lib.model.ApplicationModule
 import cz.danielkouba.ktorStarterpackDk.lib.model.ValidationError
 import cz.danielkouba.ktorStarterpackDk.lib.model.ValidationException
 import cz.danielkouba.ktorStarterpackDk.modules.logger.LoggerTest
-import io.ktor.http.*
+import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.*
 import io.ktor.server.plugins.*
 import io.ktor.server.response.*
@@ -15,7 +15,6 @@ class TestModule : ApplicationModule() {
 
     init {
         logger.debug("$name init")
-
     }
 
     override fun registerRouting(): Routing {

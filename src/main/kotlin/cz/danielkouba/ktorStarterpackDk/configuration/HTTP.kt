@@ -1,7 +1,5 @@
 package cz.danielkouba.ktorStarterpackDk.configuration
 
-//import io.ktor.server.configuration.forwardedheaders.ForwardedHeaders
-//import io.ktor.server.configuration.forwardedheaders.XForwardedHeaders
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
@@ -19,7 +17,6 @@ fun Application.configureHTTP() {
         header("X-App-Name", Config.appName)
         header("X-App-Version", Config.appVersion)
         header("X-Developer", "Ginger Beavers Team")
-
     }
 
     install(AutoHeadResponse) // Automatically respond to a HEAD request for every route that has a GET defined

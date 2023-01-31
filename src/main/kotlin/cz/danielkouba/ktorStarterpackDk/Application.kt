@@ -44,4 +44,3 @@ fun Application.bootstrap() {
      \ \____-  \ \_\ \_\     \ \_\ \_\    \ \_\  \ \_____\  \ \_\ \_\
       \/____/   \/_/\/_/      \/_/\/_/     \/_/   \/_____/   \/_/ /_/
        GINGER    BEAVERS       STARTER-PACK FOR KOTLIN KTOR SERVERS    */
-

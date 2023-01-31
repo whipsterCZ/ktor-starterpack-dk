@@ -1,0 +1,30 @@
+version: "3"
+
+services:
+  app:
+    container_name: ktor_starterpack_dk
+    build: .
+    networks:
+      - default
+      - proxy
+    labels:
+      - "traefik.backend=ktor-starterpack-dk"
+      - "traefik.frontend.rule=Host:ktor-starterpack-dk.loc"
+      - "traefik.docker.network=docker-stack_default"
+      - "traefik.port=8080"
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8080
+      - ENVIRONMENT
+      - LOG_LEVEL
+      - LOG_APPENDER
+      - SHUTDOWN_GRACEFUL_PERIOD
+      - SHUTDOWN_TIMEOUT
+      - SHUTDOWN_HOOKS_ASYNC
+      - ARTICLE_API_URL
+    restart: unless-stopped
+
+networks:
+  proxy:
+    external:
+      name: docker-stack_default

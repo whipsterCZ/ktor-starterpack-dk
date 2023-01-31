@@ -26,6 +26,8 @@ paths:
           description: "OK"
           content:
             text/plain:
+              schema:
+                type: string
   /health:
     get:
       summary: "Get Health"
@@ -34,6 +36,8 @@ paths:
           description: "OK"
           content:
             text/plain:
+              schema:
+                type: string
             application/json:
               schema:
                 type: object
@@ -45,8 +49,8 @@ paths:
           description: "OK"
           content:
             application/json:
-            schema:
-              $ref: "#/components/schemas/ArticleCollection"
+              schema:
+                $ref: "#/components/schemas/ArticleCollection"
     post:
       description: "Creates a new article"
       requestBody:
@@ -66,9 +70,9 @@ paths:
         "420":
           description: "Validation Error"
           content:
-              application/json:
+            application/json:
               schema:
-                  $ref: "#/components/schemas/ValidationError"
+                $ref: "#/components/schemas/ValidationError"
         "409":
           description: "Duplicate"
           content:
@@ -115,16 +119,16 @@ paths:
         description: "A JSON object containing article information"
         required: true
         content:
-        application/json:
-          schema:
-          $ref: "#/components/schemas/ArticleUpdate"
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ArticleUpdate"
       responses:
         "200":
-        description: "OK"
-        content:
-          application/json:
-          schema:
-            $ref: "#/components/schemas/Article"
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Article"
         "404":
           description: "Not Found"
           content:
@@ -135,8 +139,8 @@ paths:
           description: "Validation Error"
           content:
             application/json:
-            schema:
-              $ref: "#/components/schemas/ValidationError"
+              schema:
+                $ref: "#/components/schemas/ValidationError"
     delete:
       description: "Deletes a article by its ID"
       parameters:
@@ -191,7 +195,9 @@ paths:
         200:
           description: "OK"
           content:
-            "text/html"
+            text/html:
+              schema:
+                type: string
   /swagger.yml:
     get:
       summary: "Get Swagger specification file"
@@ -263,12 +269,12 @@ components:
         createdAt:
           $ref: "#/components/schemas/DateTime"
         rating:
-          type: "float"
+          type: number
           minimum: 0
           maximum: 5
           example: 1
         rateCount:
-          type: "integer"
+          type: integer
           minimum: 0
           example: 1
         status:

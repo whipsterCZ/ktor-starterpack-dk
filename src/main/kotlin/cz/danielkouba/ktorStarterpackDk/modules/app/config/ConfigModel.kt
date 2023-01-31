@@ -43,4 +43,3 @@ data class ConfigModel constructor(
     @Serializable
     public data class ConfigApi(val url: String, val authToken: String?)
 }
-

@@ -126,5 +126,4 @@ final class ArticleService(
     suspend fun cleanUp() {
         articleRepository.cleanUp()
     }
-
 }

@@ -17,7 +17,6 @@ class LoggerTest(val service: LoggerService) {
         val logger = service.createLogger("router")
         logger.also { printLogger("logger", it) }
 
-
         val loggerChild = logger.child("child")
         loggerChild.also { printLogger("loggerChild", it) }
 
