@@ -43,7 +43,7 @@ build:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
     - docker pull "$DOCKER_CACHE_IMAGE" || docker pull "${DOCKER_REPO}:main" || true # allow failure
     - docker pull "$DOCKER_IMAGE" || true # allow failure
-    - docker build --pull --cache-from "$DOCKER_IMAGE" --cache-from "$DOCKER_CACHE_IMAGE" --cache-from "${DOCKER_REPO}:main" --tag "$DOCKER_IMAGE" .
+    - docker build --file "Dockerfile.prebuilt" --pull --cache-from "$DOCKER_IMAGE" --cache-from "$DOCKER_CACHE_IMAGE" --cache-from "${DOCKER_REPO}:main" --tag "$DOCKER_IMAGE" .
     - docker push "$DOCKER_IMAGE"
     - docker tag "$DOCKER_IMAGE" "$DOCKER_CACHE_IMAGE"
     - docker push "$DOCKER_CACHE_IMAGE" || true # allow failure
