@@ -50,5 +50,5 @@
   "consulServiceName": "mal-ktor-dk",
   "cpuRequest": "10m",
   "cpuLimit": "100m",
-  "memory": "100Mi"
+  "memory": "200Mi"
 }
