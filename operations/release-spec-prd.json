@@ -33,7 +33,7 @@
     },
     "successThreshold": 1,
     "failureThreshold": 4,
-    "initialDelaySeconds": 30,
+    "initialDelaySeconds": 45,
     "periodSeconds": 10,
     "timeoutSeconds": 3
   },
