@@ -5,6 +5,7 @@ import cz.danielkouba.ktorStarterpackDk.modules.article.model.*
 import cz.danielkouba.ktorStarterpackDk.modules.article.repo.ArticleRepository
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import net.logstash.logback.argument.StructuredArguments.kv
 
 final class ArticleService(
     private val articleRepository: ArticleRepository
@@ -35,7 +36,8 @@ final class ArticleService(
         try {
             return articleRepository.createArticle(article)
         } catch (e: Exception) {
-            ctx.meta.put("article", Json.encodeToString(article))
+            ctx.logger.info("article", kv("article", article))
+            ctx.addMeta("article", Json.encodeToString(article)).logMeta()
             ctx.logger.error("Error while creating article: $article", e)
             throw e
         }
@@ -43,7 +45,7 @@ final class ArticleService(
 
     suspend fun findArticleById(id: String, context: ReqContext): Article {
         val ctx = createContext(context, "findArticleById")
-        ctx.meta.put("articleId", id)
+        ctx.addMeta("articleId", id).logMeta()
         ctx.logger.info("Finding article by id: $id")
         try {
             return articleRepository.findArticleById(id)
@@ -65,7 +67,7 @@ final class ArticleService(
 
             return articleRepository.updateArticle(id, updatedArticle)
         } catch (e: Exception) {
-            ctx.meta.put("article", Json.encodeToString(update))
+            ctx.addMeta("article", Json.encodeToString(update)).logMeta()
             ctx.logger.error("Error updating article: $update", e)
             throw e
         }
@@ -76,7 +78,7 @@ final class ArticleService(
         try {
             articleRepository.deleteArticle(id)
         } catch (e: Exception) {
-            ctx.meta.put("articleId", id)
+            ctx.addMeta("articleId", id).logMeta()
             ctx.logger.error("Error deleting article by id: $id", e)
             // no need to rethrow ( Delete should be idempotent operation )
         }
@@ -101,7 +103,7 @@ final class ArticleService(
             )
             return articleRepository.updateArticle(id, ratedArticle)
         } catch (e: Exception) {
-            ctx.meta.put("articleId", id)
+            ctx.addMeta("articleId", id).logMeta()
             ctx.logger.error("Error rating article by id: $id (rating $rating)", e)
             throw e
         }

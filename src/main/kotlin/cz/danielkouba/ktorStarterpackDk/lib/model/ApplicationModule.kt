@@ -1,8 +1,8 @@
 package cz.danielkouba.ktorStarterpackDk.lib.model
 
-import cz.danielkouba.ktorStarterpackDk.configuration.attachApplicationModules
 import cz.danielkouba.ktorStarterpackDk.configuration.config
 import cz.danielkouba.ktorStarterpackDk.configuration.enableResourceRouting
+import cz.danielkouba.ktorStarterpackDk.configuration.initApplicationModules
 import cz.danielkouba.ktorStarterpackDk.modules.logger.LoggerService
 import io.ktor.server.application.*
 import io.ktor.server.resources.*
@@ -46,7 +46,7 @@ abstract class ApplicationModule : KoinComponent {
     }
 
     /** Routing for this module
-     * it should be called from [Application.attachApplicationModules] */
+     * it should be called from [Application.initApplicationModules] */
     abstract fun registerRouting(): Routing
 
     /**

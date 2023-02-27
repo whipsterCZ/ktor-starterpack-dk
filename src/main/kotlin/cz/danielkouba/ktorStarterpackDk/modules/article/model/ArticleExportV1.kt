@@ -26,7 +26,7 @@ data class ArticleExportV1(
     val createdAt: ZonedDateTime,
     val rating: Float?,
     val rateCount: Int,
-    private val status: ArticleStatus
+    val status: ArticleStatus
 ) : Validator(), ExportModel {
     constructor(model: Article) : this(
         id = model.id,

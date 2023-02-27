@@ -25,8 +25,7 @@ fun Application.bootstrap() {
     config() // access config to Application
     configureDependencyInjection() // Koin DI
     configureLogging() // logging requests and logger configuration
-    configureReqContext() // access request context to routing
-    attachApplicationModules() // register app modules (routing, services, business logic, etc.
+    initApplicationModules() // register app modules (routing, services, business logic, etc.)
 
     /**
      * Additional Application functionality (plugins and features)

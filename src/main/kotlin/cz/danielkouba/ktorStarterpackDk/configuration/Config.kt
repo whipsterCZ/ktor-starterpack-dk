@@ -1,7 +1,8 @@
 package cz.danielkouba.ktorStarterpackDk.configuration
 
-import cz.danielkouba.ktorStarterpackDk.modules.app.config.ConfigFactoryFromEnv
+import cz.danielkouba.ktorStarterpackDk.modules.app.config.ConfigFactory
 import cz.danielkouba.ktorStarterpackDk.modules.app.config.ConfigModel
+import cz.danielkouba.ktorStarterpackDk.modules.app.config.applicationConfigFactory
 import io.ktor.server.application.*
 
 /**
@@ -17,7 +18,7 @@ import io.ktor.server.application.*
  * @see [ArticleModule] for example
  */
 val Config: ConfigModel by lazy {
-    ConfigFactoryFromEnv().also {
+    applicationConfigFactory.create().also {
         if (it.isDevelopment()) println("Config initialized: $it")
     }
 }
@@ -26,3 +27,10 @@ val Config: ConfigModel by lazy {
  * Get the config from the application
  */
 fun Application.config() = Config
+
+/**
+ * Set the config factory for the application
+ */
+fun Application.setConfigFactory(configFactory: ConfigFactory) {
+    applicationConfigFactory = configFactory
+}

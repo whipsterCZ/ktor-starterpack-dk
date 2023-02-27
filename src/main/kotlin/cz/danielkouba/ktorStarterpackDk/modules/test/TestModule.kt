@@ -1,5 +1,7 @@
 package cz.danielkouba.ktorStarterpackDk.modules.test
 
+import ch.qos.logback.classic.Level
+import cz.danielkouba.ktorStarterpackDk.configuration.reqContext
 import cz.danielkouba.ktorStarterpackDk.lib.model.ApplicationModule
 import cz.danielkouba.ktorStarterpackDk.lib.model.ValidationError
 import cz.danielkouba.ktorStarterpackDk.lib.model.ValidationException
@@ -20,6 +22,13 @@ class TestModule : ApplicationModule() {
     override fun registerRouting(): Routing {
         return routing {
             route("/test") {
+                // be careful that correct environment is set - it can be used to expose sensitive data
+                if (config.isDevelopment()) {
+                    get("/config") {
+                        call.respond(config)
+                    }
+                }
+
                 get("/plain") {
                     call.respondText("Hello World!")
                 }
@@ -58,6 +67,34 @@ class TestModule : ApplicationModule() {
                     }
                 }
 
+                /**
+                 * Request Context (Call Context) is a way to pass data between different layers of the application.
+                 * it contains call specific data such as logger, meta, etc.
+                 * it prevents to need of making Services for each request. (users has to have separate context)
+                 *
+                 * This also serves as an example of how to use it
+                 */
+                get("/req-context") {
+                    val context = call.reqContext("reqContext") {
+                        userId("userId")
+                        logLevel(Level.INFO)
+                    }
+                    context.logger.info("testing reqContext | logger INFO")
+                    context.logger.debug("testing reqContext | logger DEBUG - should not be logged")
+
+                    val childContext = context.createChild("child") {
+                        userId("userId:Child")
+                        logLevel(Level.DEBUG)
+                    }
+                    childContext.logger.info("testing reqContext.child | logger INFO")
+                    childContext.logger.debug("testing reqContext.child | logger DEBUG - should be logged")
+
+                    context.logger.info("testing reqContext #2 | logger INFO")
+                    context.logger.debug("testing reqContext #2 | logger DEBUG - should not be logged")
+
+                    call.respond(context.toString())
+                }
+
                 route("/coroutines") {
                     get("/delay") {
                         delay(1000)
@@ -70,12 +107,6 @@ class TestModule : ApplicationModule() {
                     get("/sync-operation") {
                         val result = syncOperations()
                         call.respondText("Sync operation result: $result")
-                    }
-                }
-
-                if (config.isDevelopment()) {
-                    get("/config") {
-                        call.respond(config)
                     }
                 }
             }

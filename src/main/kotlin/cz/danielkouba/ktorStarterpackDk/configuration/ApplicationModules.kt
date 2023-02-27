@@ -16,7 +16,7 @@ import kotlin.system.measureTimeMillis
  * - register dependency injection modules (expose services) @see [ApplicationModule.registerDiProvider]
  * - register routing - @see [ApplicationModule.routing]
  */
-fun Application.attachApplicationModules() {
+fun Application.initApplicationModules() {
 
     enableResourceRouting()
 

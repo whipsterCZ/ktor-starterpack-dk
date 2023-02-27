@@ -16,7 +16,7 @@ sealed class ArticleBaseValidator<T : ArticleInterface>(val model: T) : Validato
             check(rateCount >= 0) {
                 ValidationError.Bounds("rateCount", "Article $id rate count must not be negative")
             }
-            if (rateCount > 0) {
+            if (rateCount != 0) {
                 required("rating", rating, "Article $id rating must be set (rate count > 0)")
                 rating?.let {
                     check(it in 1F..5F) {
@@ -51,9 +51,6 @@ class ArticleCreateValidator(model: ArticleCreate) : ArticleBaseValidator<Articl
             }
             check(rateCount == 0) {
                 ValidationError.Invalid("rateCount", "New Article rate count must be 0")
-            }
-            check(status != ArticleStatus.DELETED) {
-                ValidationError.Invalid("status", "New Article status must not be DELETED")
             }
         }
         return super.validationErrors()

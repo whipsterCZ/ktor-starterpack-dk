@@ -7,7 +7,7 @@ import cz.danielkouba.ktorStarterpackDk.modules.article.model.*
  * This is mock repository, just works with in-memory data
  */
 open class ArticleMockRepository : ArticleRepository {
-    private val articles = mutableListOf<Article>()
+    protected val articles = mutableListOf<Article>()
 
     init {
         populate()
@@ -18,9 +18,10 @@ open class ArticleMockRepository : ArticleRepository {
     }
 
     override suspend fun findArticlesByStatus(status: ArticleStatus): ArticleCollection {
+        val items = articles.filter { it.status == status }
         return ArticleCollection(
-            items = articles.filter { it.status == status },
-            hits = articles.size
+            items = items,
+            hits = items.size
         )
     }
 
@@ -76,24 +77,29 @@ open class ArticleMockRepository : ArticleRepository {
         articles.clear()
     }
 
-    fun populate(count: Int = 10) {
+    open fun populate() {
         clear()
-        repeat(count) {
-            articles.add(
-                Article(
-                    id = it.toString(),
-                    title = "Article $it",
-                    text = "Article $it text",
-                    rating = 4.0f,
-                    rateCount = 1,
-                    status = when (it % 3) {
-                        0 -> ArticleStatus.DRAFT
-                        1 -> ArticleStatus.PUBLISHED
-                        2 -> ArticleStatus.HIDDEN
-                        else -> ArticleStatus.DELETED
-                    }
-                )
-            )
-        }
+
+        fun createArticle(id: Int, status: ArticleStatus) = Article(
+            id = "article-$id",
+            title = "Article $id",
+            text = "Article $id text",
+            rating = 4.0f,
+            rateCount = 1,
+            status = status
+        )
+
+        // add some articles with different statuses
+        articles.add(createArticle(1, ArticleStatus.PUBLISHED))
+        articles.add(createArticle(2, ArticleStatus.PUBLISHED))
+        articles.add(createArticle(3, ArticleStatus.PUBLISHED))
+
+        articles.add(createArticle(11, ArticleStatus.DRAFT))
+        articles.add(createArticle(12, ArticleStatus.DRAFT))
+        articles.add(createArticle(13, ArticleStatus.DRAFT))
+
+        articles.add(createArticle(21, ArticleStatus.HIDDEN))
+        articles.add(createArticle(22, ArticleStatus.HIDDEN))
+        articles.add(createArticle(23, ArticleStatus.HIDDEN))
     }
 }

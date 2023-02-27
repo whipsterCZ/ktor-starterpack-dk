@@ -77,6 +77,9 @@ dependencies {
 
     // M1 Mac hack
     runtimeOnly("io.netty:netty-resolver-dns-native-macos:4.1.77.Final:osx-aarch_64")
+
+    // Testing
+    testImplementation("org.skyscreamer:jsonassert:1.5.1")
 }
 
 ktlint {
