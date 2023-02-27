@@ -87,37 +87,37 @@ see `.env.sample` file
 - [x] App structure (Modules)
 - [x] Logging  [configure runtime](https://stackoverflow.com/questions/16910955/programmatically-configure-logback-appender)
   - [x] LoggerService
-  - [ ] !!!separated LoggerContext
-  - [ ] Check if all logs are compatible with ELK (fe: mal-disc-repo)
+  - [x] separated LoggerContext
+  - [x] Check if all logs are compatible with ELK
   - [x] Scoped logger per request (meta data userId, shopId, etc) @see ReqContext.kt
   - [x] MethodCalled meta
   - [x] Request logging with correct scope and loggerName
-- [ ] Error Handling
+- [x] Error Handling
   - [x] Global handling of NotFoundException, RequestValidationException, BadRequestException, IllegalArgumentException, etc 
 - [x] Monitoring
   - [x] `/metrics` endpoint (prometheus)
     - [] Metrics correct names and units (don't know how...it looks like its impossible) https://www.robustperception.io/who-wants-seconds/ 
     - [x] `/health` Health Check
-- [!!!] serialization
+- [x] serialization
 - [x] Validation
   - [x] Request & Internal & Response Validation
   - [x] Custom solution - KTOR RequestValidationPlugin is just not good enough
   - [x] Validation with nice error messages @see [ValidationException]
   - [x] Extendable validation
-- [ ] Testing
-  - [ ] Testing EP with snapshots
-  - [ ] Example module test (ArticleModule)
-- [ ] Deployment
-  - [ ] Docker
-  - [ ] gitlab-ci
-  - [ ] k8s
-- [ ] Example module (Articles)
+- [x] Testing
+  - [x] Testing EP with snapshots
+  - [x] Example module test (ArticleModule)
+- [x] Deployment
+  - [x] Docker
+  - [x] gitlab-ci
+  - [x] k8s
+- [x] Example module (Articles)
   - [x] Routing (Resource Controller)
   - [x] Repository
   - [x] Service
   - [x] Model
   - [x] ModelExporter (versioned JSON export)
-  - [ ] Tests
+  - [x] Tests
   - [x] Request & Response validation
   - [x] RequestContext (contextual logger and metadata) @see `plugins/RequestContext.kt`
 - [x] Root ApiInfo endpoint `/` (version, build, swagger, urls, etc)
@@ -130,7 +130,6 @@ see `.env.sample` file
 - [x] Auto-reload feature - which broke singletons! [KTOR-4842](https://youtrack.jetbrains.com/issue/KTOR-4842/Autoreloading-It-breaks-lateinit-variables-initialization)
   - if singleton is created inside Application module, it will be created only once (on first request) and KtorAutoLoader should don't release instance
   - in development mode, it is not problem i guess... (only Singleton which is created outside of module is Config...)
-- [ ] Logger shared context - Not working properly (context should be owned by every child)
 - [ ] CallLogging sets custom logger (app.router) - but it is used by KTOR system logging...  
 - [ ] Serializer for LogLevel doesn't work @see `/lib/serializers/LogLevelSerializer.kt`"
 - [ ] Metrics are in default second units (prometheus default) - im was unable to change it to milliseconds
